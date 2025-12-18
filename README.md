@@ -69,9 +69,13 @@ A modern web application built with React and Vite for managing employee tasks a
 
 Use one of the following credentials:
 
-- Email: `employee1@gmail.com`, Password: `123`
-- Email: `employee2@gmail.com`, Password: `123`
-- Email: `employee3@gmail.com`, Password: `123`
+- Email: `employee1@gmail.com`, Password: `123` (Rishi)
+- Email: `employee2@gmail.com`, Password: `123` (Shubham)
+- Email: `employee3@gmail.com`, Password: `123` (Sahil)
+- Email: `employee4@gmail.com`, Password: `123` (Aarav)
+- Email: `employee5@gmail.com`, Password: `123` (Ananya)
+- Email: `employee6@gmail.com`, Password: `123` (Vikram)
+- Email: `employee7@gmail.com`, Password: `123` (Priya)
 
 ## Scripts
 

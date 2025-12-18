@@ -48,7 +48,7 @@ const App = () => {
   useEffect(() => {
     setLocalStorage(); // SETTING THE DATA TO LOCAL STORAGE
     getLocalStorage(); // GETTING THE DATA FROM LOCAL STORAGE
-  }, []);
+  }, []); // Dependancy Array Prevents Unnecessary Rerenders
 
   return (
     <>
@@ -62,7 +62,7 @@ const App = () => {
   );
 };
 
-export default App;
+export default App; // Default Exported
 
 // {!user && <Login />} is a shorthand for an if-else statement: if user is empty, Login renders.
 // The sections below check if the user role is admin or employee and render the respective dashboard.
