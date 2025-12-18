@@ -3,7 +3,7 @@
 const employees = [
   {
     id: 1,
-    firstName: "Aditi",
+    firstName: "Rishi",
     email: "employee1@gmail.com",
     password: "123",
     taskNumbers: {
@@ -48,7 +48,7 @@ const employees = [
   },
   {
     id: 2,
-    firstName: "Isha",
+    firstName: "Shubham",
     email: "employee2@gmail.com",
     password: "123",
     taskNumbers: {
@@ -83,7 +83,7 @@ const employees = [
   },
   {
     id: 3,
-    firstName: "Kavya",
+    firstName: "Sahil",
     email: "employee3@gmail.com",
     password: "123",
     taskNumbers: {
