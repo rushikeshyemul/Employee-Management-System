@@ -1,5 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# Frontend
+
 # dependencies
 node_modules
 .pnp
@@ -40,3 +42,30 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+
+# Backend
+backend/guide_docs/
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+env.bak/
+venv.bak/
+.pytest_cache/
+.coverage
+htmlcov/
+*.sqlite3
+*.db
+local_settings.py
+db.sqlite3-journal
+media/
+staticfiles/
+.ruff_cache/
+.agents/
+.agent/

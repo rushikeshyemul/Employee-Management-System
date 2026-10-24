@@ -1,0 +1,5009 @@
+openapi: 3.0.3
+info:
+  title: Workforce Hub / Employee Management System API
+  version: 1.0.0
+  description: Django REST Framework Backend providing HRMS capabilities for Workforce
+    Hub.
+paths:
+  /api/v1/approvals/:
+    get:
+      operationId: v1_approvals_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - approved
+          - changes_requested
+          - pending
+          - rejected
+        description: |-
+          * `pending` - Pending
+          * `approved` - Approved
+          * `rejected` - Rejected
+          * `changes_requested` - Changes Requested
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - attendance_correction
+          - hr_request
+          - leave
+          - profile_change
+        description: |-
+          * `leave` - Leave Request
+          * `attendance_correction` - Attendance Correction
+          * `hr_request` - HR Request
+          * `profile_change` - Profile Change
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedApprovalList'
+          description: ''
+  /api/v1/approvals/{id}/:
+    get:
+      operationId: v1_approvals_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this approval.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approval'
+          description: ''
+  /api/v1/approvals/{id}/decision/:
+    post:
+      operationId: v1_approvals_decision_create
+      description: Record an approval decision (approve, reject, request_changes).
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this approval.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Approval'
+          description: ''
+  /api/v1/approvals/inbox/:
+    get:
+      operationId: v1_approvals_inbox_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - approved
+          - changes_requested
+          - pending
+          - rejected
+        description: |-
+          * `pending` - Pending
+          * `approved` - Approved
+          * `rejected` - Rejected
+          * `changes_requested` - Changes Requested
+      - in: query
+        name: type
+        schema:
+          type: string
+          enum:
+          - attendance_correction
+          - hr_request
+          - leave
+          - profile_change
+        description: |-
+          * `leave` - Leave Request
+          * `attendance_correction` - Attendance Correction
+          * `hr_request` - HR Request
+          * `profile_change` - Profile Change
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedApprovalList'
+          description: ''
+  /api/v1/attendance/breaks/end/:
+    post:
+      operationId: v1_attendance_breaks_end_create
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BreakEndResponse'
+          description: ''
+  /api/v1/attendance/breaks/start/:
+    post:
+      operationId: v1_attendance_breaks_start_create
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BreakStartResponse'
+          description: ''
+  /api/v1/attendance/clock-in/:
+    post:
+      operationId: v1_attendance_clock_in_create
+      description: Authoritative server-side clock in.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClockInResponse'
+          description: ''
+  /api/v1/attendance/clock-out/:
+    post:
+      operationId: v1_attendance_clock_out_create
+      description: Authoritative server-side clock out.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClockOutResponse'
+          description: ''
+  /api/v1/attendance/corrections/:
+    get:
+      operationId: v1_attendance_corrections_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAttendanceCorrectionList'
+          description: ''
+    post:
+      operationId: v1_attendance_corrections_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceCorrectionWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttendanceCorrectionWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttendanceCorrectionWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceCorrectionWrite'
+          description: ''
+  /api/v1/attendance/corrections/{id}/:
+    get:
+      operationId: v1_attendance_corrections_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this attendance correction.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceCorrection'
+          description: ''
+    put:
+      operationId: v1_attendance_corrections_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this attendance correction.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AttendanceCorrectionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/AttendanceCorrectionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/AttendanceCorrectionRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceCorrection'
+          description: ''
+    patch:
+      operationId: v1_attendance_corrections_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this attendance correction.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendanceCorrectionRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendanceCorrectionRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedAttendanceCorrectionRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceCorrection'
+          description: ''
+    delete:
+      operationId: v1_attendance_corrections_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this attendance correction.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/attendance/me/:
+    get:
+      operationId: v1_attendance_me_retrieve
+      description: Retrieve today's attendance state for the current user.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceToday'
+          description: ''
+  /api/v1/attendance/records/:
+    get:
+      operationId: v1_attendance_records_list
+      parameters:
+      - in: query
+        name: department_id
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - absent
+          - holiday
+          - late
+          - leave
+          - partial
+          - present
+        description: |-
+          * `present` - Present
+          * `late` - Late
+          * `absent` - Absent
+          * `partial` - Partial
+          * `leave` - On Leave
+          * `holiday` - Holiday
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedAttendanceRecordList'
+          description: ''
+  /api/v1/attendance/records/{id}/:
+    get:
+      operationId: v1_attendance_records_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this attendance record.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AttendanceRecord'
+          description: ''
+  /api/v1/auth/invitations/accept/:
+    post:
+      operationId: v1_auth_invitations_accept_create
+      description: Accept invitation token and setup user credentials.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/InviteAcceptRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/InviteAcceptRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/InviteAcceptRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/login/:
+    post:
+      operationId: v1_auth_login_create
+      description: |-
+        Authenticate user via email and password, returning user profile and tokens.
+        Also sets HttpOnly authentication cookies for cookie-based session strategy.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LoginRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LoginRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginSuccessResponse'
+          description: ''
+        '400':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/logout/:
+    post:
+      operationId: v1_auth_logout_create
+      description: Log out user by clearing authentication cookies and blacklisting
+        the refresh token.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequestRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/me/:
+    get:
+      operationId: v1_auth_me_retrieve
+      description: Retrieve currently authenticated user's profile and permissions.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CurrentUser'
+          description: ''
+  /api/v1/auth/password-reset/:
+    post:
+      operationId: v1_auth_password_reset_create
+      description: Initiate password reset via email.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetRequestRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/password-reset/confirm/:
+    post:
+      operationId: v1_auth_password_reset_confirm_create
+      description: Confirm password reset using verification token.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PasswordResetConfirmRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+          description: ''
+  /api/v1/auth/token/refresh/:
+    post:
+      operationId: v1_auth_token_refresh_create
+      description: Refresh access token using refresh token provided in payload or
+        cookie.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequestRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequestRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TokenRefreshRequestRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      - {}
+      responses:
+        '200':
+          description: No response body
+  /api/v1/departments/:
+    get:
+      operationId: v1_departments_list
+      parameters:
+      - in: query
+        name: code
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedDepartmentList'
+          description: ''
+    post:
+      operationId: v1_departments_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+  /api/v1/departments/{id}/:
+    get:
+      operationId: v1_departments_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this department.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+    put:
+      operationId: v1_departments_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this department.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/DepartmentRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+    patch:
+      operationId: v1_departments_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this department.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedDepartmentRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Department'
+          description: ''
+    delete:
+      operationId: v1_departments_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this department.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/employees/:
+    get:
+      operationId: v1_employees_list
+      parameters:
+      - in: query
+        name: department_id
+        schema:
+          type: string
+      - in: query
+        name: employment_type
+        schema:
+          type: string
+          enum:
+          - contract
+          - full_time
+          - intern
+          - part_time
+        description: |-
+          * `full_time` - Full Time
+          * `part_time` - Part Time
+          * `contract` - Contract
+          * `intern` - Intern
+      - in: query
+        name: location
+        schema:
+          type: string
+      - in: query
+        name: manager_id
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - inactive
+          - invited
+          - offboarding
+          - on_leave
+        description: |-
+          * `active` - Active
+          * `invited` - Invited
+          * `on_leave` - On Leave
+          * `inactive` - Inactive
+          * `offboarding` - Offboarding
+      - in: query
+        name: team_id
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedEmployeeList'
+          description: ''
+    post:
+      operationId: v1_employees_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmployeeWrite'
+          description: ''
+  /api/v1/employees/{id}/:
+    get:
+      operationId: v1_employees_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this employee.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    put:
+      operationId: v1_employees_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this employee.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    patch:
+      operationId: v1_employees_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this employee.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    delete:
+      operationId: v1_employees_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this employee.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/employees/{id}/deactivate/:
+    post:
+      operationId: v1_employees_deactivate_create
+      description: Deactivate an employee and their corresponding user login.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this employee.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/EmployeeRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+  /api/v1/employees/me/:
+    get:
+      operationId: v1_employees_me_retrieve
+      description: Retrieve or update profile details for current user's employee
+        record.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+    patch:
+      operationId: v1_employees_me_partial_update
+      description: Retrieve or update profile details for current user's employee
+        record.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedEmployeeRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Employee'
+          description: ''
+  /api/v1/leave/balances/:
+    get:
+      operationId: v1_leave_balances_list
+      description: Retrieve leave balances for a specific employee (Manager or HR
+        scope).
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaveBalance'
+          description: ''
+  /api/v1/leave/balances/me/:
+    get:
+      operationId: v1_leave_balances_me_list
+      description: Retrieve current user's leave balances.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/LeaveBalance'
+          description: ''
+  /api/v1/leave/requests/:
+    get:
+      operationId: v1_leave_requests_list
+      parameters:
+      - in: query
+        name: department_id
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - approved
+          - cancelled
+          - pending
+          - rejected
+          - withdrawn
+        description: |-
+          * `pending` - Pending
+          * `approved` - Approved
+          * `rejected` - Rejected
+          * `withdrawn` - Withdrawn
+          * `cancelled` - Cancelled
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLeaveRequestList'
+          description: ''
+    post:
+      operationId: v1_leave_requests_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaveRequestWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/LeaveRequestWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/LeaveRequestWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveRequestWrite'
+          description: ''
+  /api/v1/leave/requests/{id}/:
+    get:
+      operationId: v1_leave_requests_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this leave request.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveRequest'
+          description: ''
+    put:
+      operationId: v1_leave_requests_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this leave request.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveRequest'
+          description: ''
+    patch:
+      operationId: v1_leave_requests_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this leave request.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveRequest'
+          description: ''
+    delete:
+      operationId: v1_leave_requests_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this leave request.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/leave/requests/{id}/cancel/:
+    post:
+      operationId: v1_leave_requests_cancel_create
+      description: Cancel an approved leave request prior to start date.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this leave request.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveRequest'
+          description: ''
+  /api/v1/leave/requests/{id}/withdraw/:
+    post:
+      operationId: v1_leave_requests_withdraw_create
+      description: Withdraw a pending leave request and return reserved pending days.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this leave request.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveRequest'
+          description: ''
+  /api/v1/leave/types/:
+    get:
+      operationId: v1_leave_types_list
+      parameters:
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedLeaveTypeList'
+          description: ''
+  /api/v1/leave/types/{id}/:
+    get:
+      operationId: v1_leave_types_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this leave type.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaveType'
+          description: ''
+  /api/v1/notifications/:
+    get:
+      operationId: v1_notifications_list
+      parameters:
+      - in: query
+        name: category
+        schema:
+          type: string
+          enum:
+          - approval
+          - attendance
+          - hr
+          - leave
+          - system
+          - task
+        description: |-
+          * `task` - Task
+          * `leave` - Leave
+          * `attendance` - Attendance
+          * `approval` - Approval
+          * `hr` - HR
+          * `system` - System
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedNotificationList'
+          description: ''
+  /api/v1/notifications/{id}/:
+    get:
+      operationId: v1_notifications_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this notification.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/v1/notifications/{id}/read/:
+    post:
+      operationId: v1_notifications_read_create
+      description: Mark single notification as read.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this notification.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/v1/notifications/preferences/:
+    get:
+      operationId: v1_notifications_preferences_retrieve
+      description: Retrieve or update in-app and email notification preferences.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferences'
+          description: ''
+    patch:
+      operationId: v1_notifications_preferences_partial_update
+      description: Retrieve or update in-app and email notification preferences.
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationPreferencesRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationPreferencesRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedNotificationPreferencesRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotificationPreferences'
+          description: ''
+  /api/v1/notifications/read-all/:
+    post:
+      operationId: v1_notifications_read_all_create
+      description: Mark all unread notifications for requesting user as read.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Notification'
+          description: ''
+  /api/v1/organisation/settings/:
+    get:
+      operationId: v1_organisation_settings_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganisationSettings'
+          description: ''
+    patch:
+      operationId: v1_organisation_settings_partial_update
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganisationSettingsRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganisationSettingsRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedOrganisationSettingsRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OrganisationSettings'
+          description: ''
+  /api/v1/projects/:
+    get:
+      operationId: v1_projects_list
+      parameters:
+      - in: query
+        name: department_id
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - active
+          - completed
+          - on_hold
+          - planned
+        description: |-
+          * `planned` - Planned
+          * `active` - Active
+          * `on_hold` - On Hold
+          * `completed` - Completed
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedProjectList'
+          description: ''
+    post:
+      operationId: v1_projects_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+  /api/v1/projects/{id}/:
+    get:
+      operationId: v1_projects_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this project.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    put:
+      operationId: v1_projects_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this project.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/ProjectRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    patch:
+      operationId: v1_projects_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this project.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedProjectRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Project'
+          description: ''
+    delete:
+      operationId: v1_projects_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this project.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/reports/attendance/:
+    get:
+      operationId: v1_reports_attendance_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/reports/dashboard/:
+    get:
+      operationId: v1_reports_dashboard_retrieve
+      description: |-
+        Role-aware dashboard API providing aggregated metrics, deadlines,
+        attendance, workload, and notifications matching frontend DashboardResponse.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/reports/headcount/:
+    get:
+      operationId: v1_reports_headcount_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/reports/leave/:
+    get:
+      operationId: v1_reports_leave_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/reports/search/:
+    get:
+      operationId: v1_reports_search_retrieve
+      description: Global search across tasks, employees, and projects.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/reports/tasks/:
+    get:
+      operationId: v1_reports_tasks_retrieve
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/search/:
+    get:
+      operationId: v1_search_retrieve
+      description: Global search across tasks, employees, and projects.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/tasks/:
+    get:
+      operationId: v1_tasks_list
+      parameters:
+      - in: query
+        name: department_id
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - in: query
+        name: priority
+        schema:
+          type: string
+          enum:
+          - high
+          - low
+          - medium
+          - urgent
+        description: |-
+          * `low` - Low
+          * `medium` - Medium
+          * `high` - High
+          * `urgent` - Urgent
+      - in: query
+        name: project_id
+        schema:
+          type: string
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      - in: query
+        name: status
+        schema:
+          type: string
+          enum:
+          - backlog
+          - blocked
+          - changes_requested
+          - done
+          - in_progress
+          - in_review
+          - todo
+        description: |-
+          * `backlog` - Backlog
+          * `todo` - To Do
+          * `in_progress` - In Progress
+          * `in_review` - In Review
+          * `changes_requested` - Changes Requested
+          * `done` - Done
+          * `blocked` - Blocked
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTaskList'
+          description: ''
+    post:
+      operationId: v1_tasks_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskWriteRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TaskWriteRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TaskWriteRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskWrite'
+          description: ''
+  /api/v1/tasks/{id}/:
+    get:
+      operationId: v1_tasks_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this task.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskDetail'
+          description: ''
+    put:
+      operationId: v1_tasks_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this task.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TaskUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TaskUpdateRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskUpdate'
+          description: ''
+    patch:
+      operationId: v1_tasks_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this task.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTaskUpdateRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTaskUpdateRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTaskUpdateRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TaskUpdate'
+          description: ''
+    delete:
+      operationId: v1_tasks_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this task.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+  /api/v1/tasks/{id}/attachments/:
+    post:
+      operationId: v1_tasks_attachments_create
+      description: Attach files to a task.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this task.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+  /api/v1/tasks/{id}/comments/:
+    get:
+      operationId: v1_tasks_comments_retrieve
+      description: List or add comments to a task.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this task.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+    post:
+      operationId: v1_tasks_comments_create
+      description: List or add comments to a task.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this task.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+  /api/v1/tasks/{id}/transitions/:
+    post:
+      operationId: v1_tasks_transitions_create
+      description: Submit a state machine transition action.
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this task.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TaskRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Task'
+          description: ''
+  /api/v1/tasks/workflow/:
+    get:
+      operationId: v1_tasks_workflow_retrieve
+      description: Provides workflow statuses and supported transition definitions.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/tasks/workflow-definition/:
+    get:
+      operationId: v1_tasks_workflow_definition_retrieve
+      description: Provides workflow statuses and supported transition definitions.
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: {}
+          description: ''
+  /api/v1/teams/:
+    get:
+      operationId: v1_teams_list
+      parameters:
+      - in: query
+        name: department_id
+        schema:
+          type: string
+      - name: ordering
+        required: false
+        in: query
+        description: Which field to use when ordering the results.
+        schema:
+          type: string
+      - name: page
+        required: false
+        in: query
+        description: A page number within the paginated result set.
+        schema:
+          type: integer
+      - name: page_size
+        required: false
+        in: query
+        description: Number of results to return per page.
+        schema:
+          type: integer
+      - name: search
+        required: false
+        in: query
+        description: A search term.
+        schema:
+          type: string
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedTeamList'
+          description: ''
+    post:
+      operationId: v1_teams_create
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeamRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TeamRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '201':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+  /api/v1/teams/{id}/:
+    get:
+      operationId: v1_teams_retrieve
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this team.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+    put:
+      operationId: v1_teams_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this team.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TeamRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/TeamRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/TeamRequest'
+        required: true
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+    patch:
+      operationId: v1_teams_partial_update
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this team.
+        required: true
+      tags:
+      - v1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PatchedTeamRequest'
+          application/x-www-form-urlencoded:
+            schema:
+              $ref: '#/components/schemas/PatchedTeamRequest'
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/PatchedTeamRequest'
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '200':
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+          description: ''
+    delete:
+      operationId: v1_teams_destroy
+      parameters:
+      - in: path
+        name: id
+        schema:
+          type: string
+        description: A unique value identifying this team.
+        required: true
+      tags:
+      - v1
+      security:
+      - jwtAuth: []
+      - cookieAuth: []
+      responses:
+        '204':
+          description: No response body
+components:
+  schemas:
+    Approval:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        type:
+          allOf:
+          - $ref: '#/components/schemas/TypeEnum'
+          readOnly: true
+        subject_id:
+          type: string
+          readOnly: true
+        employee_id:
+          type: string
+          readOnly: true
+        employee:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        summary:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/ApprovalStatusEnum'
+          readOnly: true
+        submitted_at:
+          type: string
+          format: date-time
+          readOnly: true
+        decided_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        decided_by:
+          type: string
+          readOnly: true
+          nullable: true
+        comment:
+          type: string
+          readOnly: true
+          nullable: true
+        context:
+          readOnly: true
+        history:
+          readOnly: true
+      required:
+      - comment
+      - context
+      - decided_at
+      - decided_by
+      - employee
+      - employee_id
+      - history
+      - id
+      - status
+      - subject_id
+      - submitted_at
+      - summary
+      - title
+      - type
+    ApprovalStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      - changes_requested
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `approved` - Approved
+        * `rejected` - Rejected
+        * `changes_requested` - Changes Requested
+    AssignmentStateEnum:
+      enum:
+      - pending_acceptance
+      - accepted
+      - clarification_requested
+      - rejected
+      type: string
+      description: |-
+        * `pending_acceptance` - Pending Acceptance
+        * `accepted` - Accepted
+        * `clarification_requested` - Clarification Requested
+        * `rejected` - Rejected
+    AttendanceCorrection:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        employee_id:
+          type: string
+          readOnly: true
+        employee:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        date:
+          type: string
+          format: date
+        requested_clock_in_at:
+          type: string
+          format: date-time
+          nullable: true
+        requested_clock_out_at:
+          type: string
+          format: date-time
+          nullable: true
+        reason:
+          type: string
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AttendanceCorrectionStatusEnum'
+          readOnly: true
+        reviewer_comment:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        decided_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+      required:
+      - created_at
+      - date
+      - decided_at
+      - employee
+      - employee_id
+      - id
+      - reason
+      - status
+    AttendanceCorrectionRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        requested_clock_in_at:
+          type: string
+          format: date-time
+          nullable: true
+        requested_clock_out_at:
+          type: string
+          format: date-time
+          nullable: true
+        reason:
+          type: string
+          minLength: 1
+        reviewer_comment:
+          type: string
+          nullable: true
+      required:
+      - date
+      - reason
+    AttendanceCorrectionStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `approved` - Approved
+        * `rejected` - Rejected
+    AttendanceCorrectionWrite:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date
+        requested_clock_in_at:
+          type: string
+          format: date-time
+          nullable: true
+        requested_clock_out_at:
+          type: string
+          format: date-time
+          nullable: true
+        reason:
+          type: string
+        status:
+          allOf:
+          - $ref: '#/components/schemas/AttendanceCorrectionStatusEnum'
+          readOnly: true
+      required:
+      - date
+      - id
+      - reason
+      - status
+    AttendanceCorrectionWriteRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        requested_clock_in_at:
+          type: string
+          format: date-time
+          nullable: true
+        requested_clock_out_at:
+          type: string
+          format: date-time
+          nullable: true
+        reason:
+          type: string
+          minLength: 1
+      required:
+      - date
+      - reason
+    AttendanceRecord:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        employee_id:
+          type: string
+          readOnly: true
+        employee:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        department_id:
+          type: string
+          readOnly: true
+        date:
+          type: string
+          format: date
+        clock_in_at:
+          type: string
+          format: date-time
+          nullable: true
+        clock_out_at:
+          type: string
+          format: date-time
+          nullable: true
+        break_minutes:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        worked_minutes:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        status:
+          $ref: '#/components/schemas/AttendanceRecordStatusEnum'
+        exceptions: {}
+        timezone:
+          type: string
+          maxLength: 50
+      required:
+      - department_id
+      - employee
+      - employee_id
+    AttendanceRecordStatusEnum:
+      enum:
+      - present
+      - late
+      - absent
+      - partial
+      - leave
+      - holiday
+      type: string
+      description: |-
+        * `present` - Present
+        * `late` - Late
+        * `absent` - Absent
+        * `partial` - Partial
+        * `leave` - On Leave
+        * `holiday` - Holiday
+    AttendanceToday:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        status:
+          type: string
+        clock_in_at:
+          type: string
+          format: date-time
+          nullable: true
+        clock_out_at:
+          type: string
+          format: date-time
+          nullable: true
+        break_started_at:
+          type: string
+          format: date-time
+          nullable: true
+        break_minutes:
+          type: integer
+        worked_minutes:
+          type: integer
+        timezone:
+          type: string
+        is_late:
+          type: boolean
+        missing_clock_out:
+          type: boolean
+        breaks_enabled:
+          type: boolean
+        standard_start:
+          type: string
+      required:
+      - break_minutes
+      - break_started_at
+      - breaks_enabled
+      - clock_in_at
+      - clock_out_at
+      - date
+      - is_late
+      - missing_clock_out
+      - standard_start
+      - status
+      - timezone
+      - worked_minutes
+    BreakEndResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+        break_minutes:
+          type: integer
+      required:
+      - break_minutes
+      - detail
+    BreakStartResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+      - detail
+    CategoryEnum:
+      enum:
+      - task
+      - leave
+      - attendance
+      - approval
+      - hr
+      - system
+      type: string
+      description: |-
+        * `task` - Task
+        * `leave` - Leave
+        * `attendance` - Attendance
+        * `approval` - Approval
+        * `hr` - HR
+        * `system` - System
+    ClockInResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+        clock_in_at:
+          type: string
+          format: date-time
+      required:
+      - clock_in_at
+      - detail
+    ClockOutResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+        clock_out_at:
+          type: string
+          format: date-time
+        worked_minutes:
+          type: integer
+      required:
+      - clock_out_at
+      - detail
+      - worked_minutes
+    CurrentUser:
+      type: object
+      description: |-
+        Serializes current authenticated user matching frontend CurrentUser interface:
+        { id, email, first_name, last_name, preferred_name, role, permissions,
+          employee_id, job_title, department_id, team_id, manager_id, timezone, avatar_url }
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+        email:
+          type: string
+          format: email
+          readOnly: true
+        first_name:
+          type: string
+          readOnly: true
+        last_name:
+          type: string
+          readOnly: true
+        preferred_name:
+          type: string
+          readOnly: true
+          nullable: true
+        role:
+          allOf:
+          - $ref: '#/components/schemas/RoleEnum'
+          readOnly: true
+        permissions:
+          readOnly: true
+        employee_id:
+          type: string
+          readOnly: true
+        job_title:
+          type: string
+          readOnly: true
+        department_id:
+          type: string
+          readOnly: true
+        team_id:
+          type: string
+          nullable: true
+          readOnly: true
+        manager_id:
+          type: string
+          nullable: true
+          readOnly: true
+        timezone:
+          type: string
+          readOnly: true
+        avatar_url:
+          type: string
+          format: uri
+          readOnly: true
+          nullable: true
+      required:
+      - avatar_url
+      - department_id
+      - email
+      - employee_id
+      - first_name
+      - id
+      - job_title
+      - last_name
+      - manager_id
+      - permissions
+      - preferred_name
+      - role
+      - team_id
+      - timezone
+    Department:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        name:
+          type: string
+          maxLength: 255
+        code:
+          type: string
+          maxLength: 50
+        head_id:
+          type: string
+          nullable: true
+        description:
+          type: string
+      required:
+      - code
+      - name
+    DepartmentRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+        head_id:
+          type: string
+          minLength: 1
+          nullable: true
+        description:
+          type: string
+      required:
+      - code
+      - name
+    Employee:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        user_id:
+          type: string
+          readOnly: true
+          nullable: true
+        employee_code:
+          type: string
+          maxLength: 50
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        preferred_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        personal_email:
+          nullable: true
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        job_title:
+          type: string
+          maxLength: 200
+        department_id:
+          type: string
+          nullable: true
+        team_id:
+          type: string
+          nullable: true
+        manager_id:
+          type: string
+          nullable: true
+        location:
+          type: string
+          maxLength: 100
+        employment_type:
+          $ref: '#/components/schemas/EmploymentTypeEnum'
+        status:
+          $ref: '#/components/schemas/EmployeeStatusEnum'
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        avatar_url:
+          nullable: true
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 500
+          - type: string
+            maxLength: 0
+        bio:
+          type: string
+        emergency_contact_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        emergency_contact_phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        salary_band:
+          type: string
+          nullable: true
+          maxLength: 50
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - email
+      - employee_code
+      - first_name
+      - job_title
+      - last_name
+      - user_id
+    EmployeeRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        employee_code:
+          type: string
+          minLength: 1
+          maxLength: 50
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        preferred_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        personal_email:
+          nullable: true
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        job_title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        department_id:
+          type: string
+          nullable: true
+          minLength: 1
+        team_id:
+          type: string
+          nullable: true
+          minLength: 1
+        manager_id:
+          type: string
+          nullable: true
+          minLength: 1
+        location:
+          type: string
+          minLength: 1
+          maxLength: 100
+        employment_type:
+          $ref: '#/components/schemas/EmploymentTypeEnum'
+        status:
+          $ref: '#/components/schemas/EmployeeStatusEnum'
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        avatar_url:
+          nullable: true
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 500
+          - type: string
+            maxLength: 0
+        bio:
+          type: string
+        emergency_contact_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        emergency_contact_phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        salary_band:
+          type: string
+          nullable: true
+          maxLength: 50
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - email
+      - employee_code
+      - first_name
+      - job_title
+      - last_name
+    EmployeeStatusEnum:
+      enum:
+      - active
+      - invited
+      - on_leave
+      - inactive
+      - offboarding
+      type: string
+      description: |-
+        * `active` - Active
+        * `invited` - Invited
+        * `on_leave` - On Leave
+        * `inactive` - Inactive
+        * `offboarding` - Offboarding
+    EmployeeWrite:
+      type: object
+      properties:
+        first_name:
+          type: string
+          maxLength: 150
+        last_name:
+          type: string
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          maxLength: 254
+        job_title:
+          type: string
+          maxLength: 200
+        department_id:
+          type: string
+        team_id:
+          type: string
+          nullable: true
+        manager_id:
+          type: string
+          nullable: true
+        location:
+          type: string
+          maxLength: 100
+        employment_type:
+          $ref: '#/components/schemas/EmploymentTypeEnum'
+        start_date:
+          type: string
+          format: date
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        role:
+          type: string
+          default: employee
+        invite:
+          type: boolean
+          default: false
+      required:
+      - department_id
+      - email
+      - first_name
+      - job_title
+      - last_name
+    EmployeeWriteRequest:
+      type: object
+      properties:
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        job_title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        department_id:
+          type: string
+          minLength: 1
+        team_id:
+          type: string
+          nullable: true
+        manager_id:
+          type: string
+          nullable: true
+        location:
+          type: string
+          minLength: 1
+          maxLength: 100
+        employment_type:
+          $ref: '#/components/schemas/EmploymentTypeEnum'
+        start_date:
+          type: string
+          format: date
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        role:
+          type: string
+          minLength: 1
+          default: employee
+        invite:
+          type: boolean
+          default: false
+      required:
+      - department_id
+      - email
+      - first_name
+      - job_title
+      - last_name
+    EmploymentTypeEnum:
+      enum:
+      - full_time
+      - part_time
+      - contract
+      - intern
+      type: string
+      description: |-
+        * `full_time` - Full Time
+        * `part_time` - Part Time
+        * `contract` - Contract
+        * `intern` - Intern
+    InviteAcceptRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 8
+        preferred_name:
+          type: string
+          nullable: true
+      required:
+      - password
+      - token
+    LeaveBalance:
+      type: object
+      properties:
+        leave_type_id:
+          type: string
+          readOnly: true
+        leave_type_name:
+          type: string
+          readOnly: true
+        code:
+          type: string
+          readOnly: true
+        allocated_days:
+          type: number
+          format: double
+        used_days:
+          type: number
+          format: double
+        pending_days:
+          type: number
+          format: double
+        available_days:
+          type: number
+          format: double
+          readOnly: true
+      required:
+      - available_days
+      - code
+      - leave_type_id
+      - leave_type_name
+    LeaveRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        employee_id:
+          type: string
+          readOnly: true
+        employee:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        department_id:
+          type: string
+          readOnly: true
+        leave_type_id:
+          type: string
+          readOnly: true
+        leave_type_name:
+          type: string
+          readOnly: true
+        start_date:
+          type: string
+          format: date
+          readOnly: true
+        end_date:
+          type: string
+          format: date
+          readOnly: true
+        partial_day:
+          allOf:
+          - $ref: '#/components/schemas/PartialDayEnum'
+          readOnly: true
+        days:
+          type: number
+          format: double
+          readOnly: true
+        reason:
+          type: string
+          readOnly: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/LeaveStatusEnum'
+          readOnly: true
+        reviewer_comment:
+          type: string
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        decided_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        warnings:
+          readOnly: true
+      required:
+      - created_at
+      - days
+      - decided_at
+      - department_id
+      - employee
+      - employee_id
+      - end_date
+      - id
+      - leave_type_id
+      - leave_type_name
+      - partial_day
+      - reason
+      - reviewer_comment
+      - start_date
+      - status
+      - warnings
+    LeaveRequestWrite:
+      type: object
+      properties:
+        leave_type_id:
+          type: string
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        partial_day:
+          $ref: '#/components/schemas/PartialDayEnum'
+        reason:
+          type: string
+      required:
+      - end_date
+      - leave_type_id
+      - reason
+      - start_date
+    LeaveRequestWriteRequest:
+      type: object
+      properties:
+        leave_type_id:
+          type: string
+          minLength: 1
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+        partial_day:
+          $ref: '#/components/schemas/PartialDayEnum'
+        reason:
+          type: string
+          minLength: 1
+      required:
+      - end_date
+      - leave_type_id
+      - reason
+      - start_date
+    LeaveStatusEnum:
+      enum:
+      - pending
+      - approved
+      - rejected
+      - withdrawn
+      - cancelled
+      type: string
+      description: |-
+        * `pending` - Pending
+        * `approved` - Approved
+        * `rejected` - Rejected
+        * `withdrawn` - Withdrawn
+        * `cancelled` - Cancelled
+    LeaveType:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        code:
+          type: string
+          maxLength: 50
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        requires_attachment:
+          type: boolean
+        allow_partial_day:
+          type: boolean
+      required:
+      - code
+      - name
+    LoginRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+        password:
+          type: string
+          writeOnly: true
+          minLength: 1
+        remember_me:
+          type: boolean
+          default: false
+      required:
+      - email
+      - password
+    LoginSuccessResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/CurrentUser'
+      required:
+      - user
+    MessageResponse:
+      type: object
+      properties:
+        detail:
+          type: string
+      required:
+      - detail
+    Notification:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        recipient_id:
+          type: string
+          readOnly: true
+        category:
+          allOf:
+          - $ref: '#/components/schemas/CategoryEnum'
+          readOnly: true
+        title:
+          type: string
+          readOnly: true
+        body:
+          type: string
+          readOnly: true
+        href:
+          type: string
+          readOnly: true
+          nullable: true
+        read_at:
+          type: string
+          format: date-time
+          readOnly: true
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - body
+      - category
+      - created_at
+      - href
+      - id
+      - read_at
+      - recipient_id
+      - title
+    NotificationPreferences:
+      type: object
+      properties:
+        email_enabled:
+          type: boolean
+        in_app_enabled:
+          type: boolean
+        categories: {}
+    OrganisationSettings:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        legal_name:
+          type: string
+          maxLength: 255
+        timezone:
+          type: string
+          maxLength: 50
+        work_week: {}
+        standard_start:
+          type: string
+          maxLength: 10
+        breaks_enabled:
+          type: boolean
+        date_format:
+          type: string
+          maxLength: 20
+    PaginatedApprovalList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Approval'
+    PaginatedAttendanceCorrectionList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttendanceCorrection'
+    PaginatedAttendanceRecordList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/AttendanceRecord'
+    PaginatedDepartmentList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Department'
+    PaginatedEmployeeList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Employee'
+    PaginatedLeaveRequestList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaveRequest'
+    PaginatedLeaveTypeList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LeaveType'
+    PaginatedNotificationList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Notification'
+    PaginatedProjectList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Project'
+    PaginatedTaskList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+    PaginatedTeamList:
+      type: object
+      required:
+      - count
+      - results
+      properties:
+        count:
+          type: integer
+          example: 123
+        next:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=4
+        previous:
+          type: string
+          nullable: true
+          format: uri
+          example: http://api.example.org/accounts/?page=2
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/Team'
+    PartialDayEnum:
+      enum:
+      - none
+      - am
+      - pm
+      type: string
+      description: |-
+        * `none` - None
+        * `am` - Morning (AM)
+        * `pm` - Afternoon (PM)
+    PasswordResetConfirmRequest:
+      type: object
+      properties:
+        token:
+          type: string
+          minLength: 1
+        password:
+          type: string
+          minLength: 8
+      required:
+      - password
+      - token
+    PasswordResetRequestRequest:
+      type: object
+      properties:
+        email:
+          type: string
+          format: email
+          minLength: 1
+      required:
+      - email
+    PatchedAttendanceCorrectionRequest:
+      type: object
+      properties:
+        date:
+          type: string
+          format: date
+        requested_clock_in_at:
+          type: string
+          format: date-time
+          nullable: true
+        requested_clock_out_at:
+          type: string
+          format: date-time
+          nullable: true
+        reason:
+          type: string
+          minLength: 1
+        reviewer_comment:
+          type: string
+          nullable: true
+    PatchedDepartmentRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        code:
+          type: string
+          minLength: 1
+          maxLength: 50
+        head_id:
+          type: string
+          minLength: 1
+          nullable: true
+        description:
+          type: string
+    PatchedEmployeeRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        employee_code:
+          type: string
+          minLength: 1
+          maxLength: 50
+        first_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        last_name:
+          type: string
+          minLength: 1
+          maxLength: 150
+        preferred_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        email:
+          type: string
+          format: email
+          minLength: 1
+          maxLength: 254
+        personal_email:
+          nullable: true
+          oneOf:
+          - type: string
+            format: email
+            maxLength: 254
+          - type: string
+            maxLength: 0
+        phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        job_title:
+          type: string
+          minLength: 1
+          maxLength: 200
+        department_id:
+          type: string
+          nullable: true
+          minLength: 1
+        team_id:
+          type: string
+          nullable: true
+          minLength: 1
+        manager_id:
+          type: string
+          nullable: true
+          minLength: 1
+        location:
+          type: string
+          minLength: 1
+          maxLength: 100
+        employment_type:
+          $ref: '#/components/schemas/EmploymentTypeEnum'
+        status:
+          $ref: '#/components/schemas/EmployeeStatusEnum'
+        start_date:
+          type: string
+          format: date
+        end_date:
+          type: string
+          format: date
+          nullable: true
+        avatar_url:
+          nullable: true
+          oneOf:
+          - type: string
+            format: uri
+            maxLength: 500
+          - type: string
+            maxLength: 0
+        bio:
+          type: string
+        emergency_contact_name:
+          type: string
+          nullable: true
+          maxLength: 150
+        emergency_contact_phone:
+          type: string
+          nullable: true
+          maxLength: 50
+        salary_band:
+          type: string
+          nullable: true
+          maxLength: 50
+        date_of_birth:
+          type: string
+          format: date
+          nullable: true
+    PatchedNotificationPreferencesRequest:
+      type: object
+      properties:
+        email_enabled:
+          type: boolean
+        in_app_enabled:
+          type: boolean
+        categories: {}
+    PatchedOrganisationSettingsRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        legal_name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        timezone:
+          type: string
+          minLength: 1
+          maxLength: 50
+        work_week: {}
+        standard_start:
+          type: string
+          minLength: 1
+          maxLength: 10
+        breaks_enabled:
+          type: boolean
+        date_format:
+          type: string
+          minLength: 1
+          maxLength: 20
+    PatchedProjectRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        key:
+          type: string
+          minLength: 1
+          maxLength: 20
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        department_id:
+          type: string
+          minLength: 1
+        lead_id:
+          type: string
+          minLength: 1
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ProjectStatusEnum'
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        target_date:
+          type: string
+          format: date
+          nullable: true
+    PatchedTaskUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        assignee_id:
+          type: string
+          minLength: 1
+          nullable: true
+        reviewer_id:
+          type: string
+          minLength: 1
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        labels: {}
+        parent_id:
+          type: string
+          minLength: 1
+          nullable: true
+    PatchedTeamRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        department_id:
+          type: string
+          minLength: 1
+        lead_id:
+          type: string
+          minLength: 1
+          nullable: true
+        description:
+          type: string
+    PersonRef:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        job_title:
+          type: string
+          nullable: true
+        avatar_url:
+          type: string
+          nullable: true
+      required:
+      - avatar_url
+      - id
+      - job_title
+      - name
+    PriorityEnum:
+      enum:
+      - low
+      - medium
+      - high
+      - urgent
+      type: string
+      description: |-
+        * `low` - Low
+        * `medium` - Medium
+        * `high` - High
+        * `urgent` - Urgent
+    Project:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        key:
+          type: string
+          maxLength: 20
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        department_id:
+          type: string
+        lead_id:
+          type: string
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ProjectStatusEnum'
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        target_date:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - department_id
+      - key
+      - name
+    ProjectRef:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        key:
+          type: string
+      required:
+      - id
+      - key
+      - name
+    ProjectRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        key:
+          type: string
+          minLength: 1
+          maxLength: 20
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        department_id:
+          type: string
+          minLength: 1
+        lead_id:
+          type: string
+          minLength: 1
+          nullable: true
+        status:
+          $ref: '#/components/schemas/ProjectStatusEnum'
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        target_date:
+          type: string
+          format: date
+          nullable: true
+      required:
+      - department_id
+      - key
+      - name
+    ProjectStatusEnum:
+      enum:
+      - planned
+      - active
+      - on_hold
+      - completed
+      type: string
+      description: |-
+        * `planned` - Planned
+        * `active` - Active
+        * `on_hold` - On Hold
+        * `completed` - Completed
+    RoleEnum:
+      enum:
+      - super_admin
+      - hr_admin
+      - manager
+      - project_manager
+      - employee
+      - auditor
+      type: string
+      description: |-
+        * `super_admin` - Super Admin
+        * `hr_admin` - HR Admin
+        * `manager` - Manager
+        * `project_manager` - Project Manager
+        * `employee` - Employee
+        * `auditor` - Auditor
+    Task:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        key:
+          type: string
+          maxLength: 30
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        project_id:
+          type: string
+          readOnly: true
+        project:
+          allOf:
+          - $ref: '#/components/schemas/ProjectRef'
+          readOnly: true
+        department_id:
+          type: string
+          readOnly: true
+        team_id:
+          type: string
+          readOnly: true
+          nullable: true
+        assignee_id:
+          type: string
+          readOnly: true
+          nullable: true
+        assignee:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        reporter_id:
+          type: string
+          readOnly: true
+        reporter:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        reviewer_id:
+          type: string
+          readOnly: true
+          nullable: true
+        reviewer:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        status:
+          $ref: '#/components/schemas/TaskStatusEnum'
+        assignment_state:
+          $ref: '#/components/schemas/AssignmentStateEnum'
+        rejection_reason:
+          type: string
+          nullable: true
+        clarification_note:
+          type: string
+          nullable: true
+        block_reason:
+          type: string
+          nullable: true
+        blocked_from:
+          type: string
+          nullable: true
+          maxLength: 30
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        labels: {}
+        parent_id:
+          type: string
+          readOnly: true
+          nullable: true
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskAttachment'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - assignee
+      - assignee_id
+      - attachments
+      - created_at
+      - department_id
+      - key
+      - parent_id
+      - project
+      - project_id
+      - reporter
+      - reporter_id
+      - reviewer
+      - reviewer_id
+      - team_id
+      - title
+      - updated_at
+    TaskAttachment:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        name:
+          type: string
+          maxLength: 255
+        size:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        content_type:
+          type: string
+          maxLength: 100
+        url:
+          type: string
+          nullable: true
+          maxLength: 500
+      required:
+      - name
+    TaskAttachmentRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        size:
+          type: integer
+          maximum: 2147483647
+          minimum: -2147483648
+        content_type:
+          type: string
+          minLength: 1
+          maxLength: 100
+        url:
+          type: string
+          nullable: true
+          maxLength: 500
+      required:
+      - name
+    TaskComment:
+      type: object
+      properties:
+        id:
+          type: string
+          readOnly: true
+        task_id:
+          type: string
+          readOnly: true
+        author_id:
+          type: string
+          readOnly: true
+        author:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        body:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - author
+      - author_id
+      - body
+      - created_at
+      - id
+      - task_id
+    TaskDetail:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        key:
+          type: string
+          maxLength: 30
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        project_id:
+          type: string
+          readOnly: true
+        project:
+          allOf:
+          - $ref: '#/components/schemas/ProjectRef'
+          readOnly: true
+        department_id:
+          type: string
+          readOnly: true
+        team_id:
+          type: string
+          readOnly: true
+          nullable: true
+        assignee_id:
+          type: string
+          readOnly: true
+          nullable: true
+        assignee:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        reporter_id:
+          type: string
+          readOnly: true
+        reporter:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        reviewer_id:
+          type: string
+          readOnly: true
+          nullable: true
+        reviewer:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        status:
+          $ref: '#/components/schemas/TaskStatusEnum'
+        assignment_state:
+          $ref: '#/components/schemas/AssignmentStateEnum'
+        rejection_reason:
+          type: string
+          nullable: true
+        clarification_note:
+          type: string
+          nullable: true
+        block_reason:
+          type: string
+          nullable: true
+        blocked_from:
+          type: string
+          nullable: true
+          maxLength: 30
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        labels: {}
+        parent_id:
+          type: string
+          readOnly: true
+          nullable: true
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskAttachment'
+          readOnly: true
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+        comments:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskComment'
+          readOnly: true
+        events:
+          type: array
+          items:
+            $ref: '#/components/schemas/TaskEvent'
+          readOnly: true
+        subtasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Task'
+          readOnly: true
+        available_actions:
+          type: array
+          items:
+            type: string
+          readOnly: true
+      required:
+      - assignee
+      - assignee_id
+      - attachments
+      - available_actions
+      - comments
+      - created_at
+      - department_id
+      - events
+      - key
+      - parent_id
+      - project
+      - project_id
+      - reporter
+      - reporter_id
+      - reviewer
+      - reviewer_id
+      - subtasks
+      - team_id
+      - title
+      - updated_at
+    TaskEvent:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        task_id:
+          type: string
+          readOnly: true
+        actor_id:
+          type: string
+          readOnly: true
+        actor:
+          allOf:
+          - $ref: '#/components/schemas/PersonRef'
+          readOnly: true
+        message:
+          type: string
+          maxLength: 500
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+      required:
+      - actor
+      - actor_id
+      - created_at
+      - message
+      - task_id
+    TaskRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        key:
+          type: string
+          minLength: 1
+          maxLength: 30
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        status:
+          $ref: '#/components/schemas/TaskStatusEnum'
+        assignment_state:
+          $ref: '#/components/schemas/AssignmentStateEnum'
+        rejection_reason:
+          type: string
+          nullable: true
+        clarification_note:
+          type: string
+          nullable: true
+        block_reason:
+          type: string
+          nullable: true
+        blocked_from:
+          type: string
+          nullable: true
+          maxLength: 30
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        labels: {}
+      required:
+      - key
+      - title
+    TaskStatusEnum:
+      enum:
+      - backlog
+      - todo
+      - in_progress
+      - in_review
+      - changes_requested
+      - done
+      - blocked
+      type: string
+      description: |-
+        * `backlog` - Backlog
+        * `todo` - To Do
+        * `in_progress` - In Progress
+        * `in_review` - In Review
+        * `changes_requested` - Changes Requested
+        * `done` - Done
+        * `blocked` - Blocked
+    TaskUpdate:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        assignee_id:
+          type: string
+          nullable: true
+        reviewer_id:
+          type: string
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        labels: {}
+        parent_id:
+          type: string
+          nullable: true
+      required:
+      - title
+    TaskUpdateRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        assignee_id:
+          type: string
+          minLength: 1
+          nullable: true
+        reviewer_id:
+          type: string
+          minLength: 1
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        labels: {}
+        parent_id:
+          type: string
+          minLength: 1
+          nullable: true
+      required:
+      - title
+    TaskWrite:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        project_id:
+          type: string
+        assignee_id:
+          type: string
+        reviewer_id:
+          type: string
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        labels: {}
+        parent_id:
+          type: string
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/TaskWriteStatusEnum'
+          default: todo
+      required:
+      - assignee_id
+      - project_id
+      - title
+    TaskWriteRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          minLength: 1
+          maxLength: 255
+        description:
+          type: string
+        project_id:
+          type: string
+          minLength: 1
+        assignee_id:
+          type: string
+          minLength: 1
+        reviewer_id:
+          type: string
+          minLength: 1
+          nullable: true
+        priority:
+          $ref: '#/components/schemas/PriorityEnum'
+        start_date:
+          type: string
+          format: date
+          nullable: true
+        due_date:
+          type: string
+          format: date
+          nullable: true
+        labels: {}
+        parent_id:
+          type: string
+          minLength: 1
+          nullable: true
+        status:
+          allOf:
+          - $ref: '#/components/schemas/TaskWriteStatusEnum'
+          default: todo
+      required:
+      - assignee_id
+      - project_id
+      - title
+    TaskWriteStatusEnum:
+      enum:
+      - backlog
+      - todo
+      type: string
+      description: |-
+        * `backlog` - Backlog
+        * `todo` - To Do
+    Team:
+      type: object
+      properties:
+        id:
+          type: string
+          maxLength: 64
+        name:
+          type: string
+          maxLength: 255
+        department_id:
+          type: string
+        lead_id:
+          type: string
+          nullable: true
+        description:
+          type: string
+      required:
+      - department_id
+      - name
+    TeamRequest:
+      type: object
+      properties:
+        id:
+          type: string
+          minLength: 1
+          maxLength: 64
+        name:
+          type: string
+          minLength: 1
+          maxLength: 255
+        department_id:
+          type: string
+          minLength: 1
+        lead_id:
+          type: string
+          minLength: 1
+          nullable: true
+        description:
+          type: string
+      required:
+      - department_id
+      - name
+    TokenRefreshRequestRequest:
+      type: object
+      properties:
+        refresh:
+          type: string
+    TypeEnum:
+      enum:
+      - leave
+      - attendance_correction
+      - hr_request
+      - profile_change
+      type: string
+      description: |-
+        * `leave` - Leave Request
+        * `attendance_correction` - Attendance Correction
+        * `hr_request` - HR Request
+        * `profile_change` - Profile Change
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: sessionid
+    jwtAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT Authorization header using Bearer scheme or HttpOnly session
+        cookie 'wf_access'.
