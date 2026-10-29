@@ -1,4 +1,8 @@
+import uuid
+
 from django.conf import settings
+from django.db import transaction
+from django.utils import timezone
 from drf_spectacular.utils import extend_schema, inline_serializer
 from rest_framework import permissions, status
 from rest_framework.response import Response
@@ -6,6 +10,10 @@ from rest_framework.views import APIView
 from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from apps.employees.models import Employee
+from apps.organisations.models import Department
+
+from .models import EMPLOYEE_ACCOUNT_PERMISSIONS, User
 from .serializers import (
     CurrentUserSerializer,
     InviteAcceptSerializer,
@@ -13,8 +21,48 @@ from .serializers import (
     MessageResponseSerializer,
     PasswordResetConfirmSerializer,
     PasswordResetRequestSerializer,
+    RegisterRequestSerializer,
     TokenRefreshRequestSerializer,
 )
+
+
+def issue_token_response(user, status_code):
+    """Return the login payload and set the access and refresh cookies."""
+    user = User.objects.select_related("employee_profile").get(pk=user.pk)
+    refresh = RefreshToken.for_user(user)
+    access_token = str(refresh.access_token)
+    refresh_token = str(refresh)
+
+    response = Response(
+        {
+            "user": CurrentUserSerializer(user).data,
+            "access": access_token,
+            "refresh": refresh_token,
+        },
+        status=status_code,
+    )
+
+    cookie_secure = not settings.DEBUG
+    access_max_age = int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds())
+    refresh_max_age = int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds())
+
+    response.set_cookie(
+        key=settings.JWT_AUTH_COOKIE,
+        value=access_token,
+        max_age=access_max_age,
+        httponly=True,
+        samesite="Lax",
+        secure=cookie_secure,
+    )
+    response.set_cookie(
+        key=settings.JWT_AUTH_REFRESH_COOKIE,
+        value=refresh_token,
+        max_age=refresh_max_age,
+        httponly=True,
+        samesite="Lax",
+        secure=cookie_secure,
+    )
+    return response
 
 
 class LoginView(APIView):
@@ -40,44 +88,54 @@ class LoginView(APIView):
     def post(self, request):
         serializer = LoginRequestSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
-        user = serializer.validated_data["user"]
+        return issue_token_response(serializer.validated_data["user"], status.HTTP_200_OK)
 
-        refresh = RefreshToken.for_user(user)
-        access_token = str(refresh.access_token)
-        refresh_token = str(refresh)
 
-        user_data = CurrentUserSerializer(user).data
-        response_data = {
-            "user": user_data,
-            "access": access_token,
-            "refresh": refresh_token,
-        }
+class RegisterView(APIView):
+    """Create an employee account and sign the new user in."""
 
-        response = Response(response_data, status=status.HTTP_200_OK)
+    permission_classes = [permissions.AllowAny]
 
-        # Set auth cookies for web browser cookie strategy
-        cookie_secure = not settings.DEBUG
-        access_max_age = int(settings.SIMPLE_JWT["ACCESS_TOKEN_LIFETIME"].total_seconds())
-        refresh_max_age = int(settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"].total_seconds())
+    @extend_schema(
+        request=RegisterRequestSerializer,
+        responses={
+            201: inline_serializer(
+                name="RegisterSuccessResponse",
+                fields={"user": CurrentUserSerializer()},
+            ),
+            400: MessageResponseSerializer,
+        },
+    )
+    def post(self, request):
+        serializer = RegisterRequestSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        preferred_name = (data.get("preferred_name") or "").strip() or None
 
-        response.set_cookie(
-            key=settings.JWT_AUTH_COOKIE,
-            value=access_token,
-            max_age=access_max_age,
-            httponly=True,
-            samesite="Lax",
-            secure=cookie_secure,
-        )
-        response.set_cookie(
-            key=settings.JWT_AUTH_REFRESH_COOKIE,
-            value=refresh_token,
-            max_age=refresh_max_age,
-            httponly=True,
-            samesite="Lax",
-            secure=cookie_secure,
-        )
+        with transaction.atomic():
+            user = User.objects.create_user(
+                email=data["email"],
+                password=data["password"],
+                first_name=data["first_name"].strip(),
+                last_name=data["last_name"].strip(),
+                preferred_name=preferred_name,
+                role="employee",
+                permissions=list(EMPLOYEE_ACCOUNT_PERMISSIONS),
+            )
+            Employee.objects.create(
+                user=user,
+                employee_code=f"EMP-{uuid.uuid4().hex[:6].upper()}",
+                first_name=user.first_name,
+                last_name=user.last_name,
+                preferred_name=preferred_name,
+                email=user.email,
+                job_title="Employee",
+                department=Department.objects.order_by("name").first(),
+                status="active",
+                start_date=timezone.now().date(),
+            )
 
-        return response
+        return issue_token_response(user, status.HTTP_201_CREATED)
 
 
 class LogoutView(APIView):

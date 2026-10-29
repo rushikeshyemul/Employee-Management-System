@@ -18,7 +18,7 @@ import {
 } from "@/lib/api/client";
 import { authService } from "@/lib/api/services";
 import { permissionFallback } from "@/lib/permissions";
-import type { CurrentUser, LoginRequest, Permission } from "@/types";
+import type { CurrentUser, LoginRequest, Permission, RegisterRequest } from "@/types";
 
 type Status = "loading" | "authenticated" | "anonymous";
 
@@ -28,6 +28,7 @@ interface AuthContextValue {
   permissions: readonly Permission[];
   usingPermissionFallback: boolean;
   login: (input: LoginRequest) => Promise<CurrentUser>;
+  register: (input: RegisterRequest) => Promise<CurrentUser>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -73,9 +74,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => setUnauthorizedHandler(null);
   }, [applyUser, router]);
 
-  const login = useCallback(
-    async (input: LoginRequest) => {
-      const result = await authService.login(input);
+  const establishSession = useCallback(
+    async (result: { user?: CurrentUser; access?: string; refresh?: string }) => {
       if (result.access) setAccessToken(result.access);
       if (result.refresh) setRefreshToken(result.refresh);
       const next = result.user ?? (await authService.me());
@@ -83,6 +83,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return next;
     },
     [applyUser],
+  );
+
+  const login = useCallback(
+    async (input: LoginRequest) => establishSession(await authService.login(input)),
+    [establishSession],
+  );
+
+  const register = useCallback(
+    async (input: RegisterRequest) => establishSession(await authService.register(input)),
+    [establishSession],
   );
 
   const logout = useCallback(async () => {
@@ -108,10 +118,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       permissions,
       usingPermissionFallback,
       login,
+      register,
       logout,
       refreshUser,
     }),
-    [user, status, permissions, usingPermissionFallback, login, logout, refreshUser],
+    [user, status, permissions, usingPermissionFallback, login, register, logout, refreshUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -14,6 +14,25 @@ ROLE_CHOICES = (
     ("auditor", "Auditor"),
 )
 
+# Permissions granted to a self-registered employee. Task creation stays with
+# managers and project managers, matching the seeded employee account.
+EMPLOYEE_ACCOUNT_PERMISSIONS = [
+    "dashboard.view",
+    "tasks.view_own",
+    "tasks.comment",
+    "tasks.transition_own",
+    "projects.view",
+    "attendance.view_own",
+    "attendance.clock",
+    "attendance.request_correction",
+    "leave.view_own",
+    "leave.request",
+    "notifications.view",
+    "profile.view",
+    "profile.edit_self",
+    "employees.view",
+]
+
 
 class User(AbstractBaseUser, PermissionsMixin):
     """

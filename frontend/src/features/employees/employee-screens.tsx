@@ -314,7 +314,7 @@ export function EmployeeFormScreen({ mode }: { mode: "create" | "edit" }) {
         <Field label="Work email" error={form.formState.errors.email?.message}><Input type="email" {...form.register("email")} /></Field>
         <Field label="Job title" error={form.formState.errors.job_title?.message}><Input {...form.register("job_title")} /></Field>
         <Field label="Department" error={form.formState.errors.department_id?.message}>
-          <Select value={form.watch("department_id") || undefined} onValueChange={(value) => value && form.setValue("department_id", value, { shouldValidate: true })}>
+          <Select value={form.watch("department_id")} onValueChange={(value) => value && form.setValue("department_id", value, { shouldValidate: true })}>
             <SelectTrigger className="w-full"><SelectValue placeholder="Select" /></SelectTrigger>
             <SelectContent>{departments.data?.map((item) => <SelectItem key={item.id} value={item.id}>{item.name}</SelectItem>)}</SelectContent>
           </Select>

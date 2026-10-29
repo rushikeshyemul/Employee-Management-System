@@ -92,7 +92,7 @@ export function hasAnyPermission(
 const ROUTE_GUARDS: { prefix: string; anyOf: readonly Permission[] }[] = [
   { prefix: "/tasks/board", anyOf: ["tasks.view_team", "tasks.view_all"] },
   { prefix: "/tasks/review", anyOf: ["tasks.review"] },
-  { prefix: "/tasks", anyOf: ["tasks.view_own"] },
+  { prefix: "/tasks", anyOf: ["tasks.view_own", "tasks.view_team", "tasks.view_all", "tasks.create"] },
   { prefix: "/projects", anyOf: ["projects.view"] },
   { prefix: "/employees", anyOf: ["employees.view"] },
   { prefix: "/teams", anyOf: ["employees.view_team", "departments.view"] },

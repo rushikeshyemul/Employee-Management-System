@@ -4,6 +4,7 @@ from rest_framework import status
 from rest_framework.test import APIClient
 
 from apps.accounts.models import User
+from apps.employees.models import Employee
 
 
 @pytest.fixture
@@ -149,6 +150,42 @@ class TestAuthentication:
         )
         assert ok_res.status_code == status.HTTP_200_OK
         assert "detail" in ok_res.json()
+
+    def test_register_creates_employee_and_signs_in(self, api_client):
+        url = reverse("accounts:register")
+        response = api_client.post(
+            url,
+            {
+                "email": "new.hire@helios.example",
+                "password": "NewHirePassword1!",
+                "first_name": "New",
+                "last_name": "Hire",
+                "preferred_name": "New",
+            },
+            format="json",
+        )
+
+        assert response.status_code == status.HTTP_201_CREATED
+        data = response.json()
+        assert data["user"]["email"] == "new.hire@helios.example"
+        assert data["user"]["role"] == "employee"
+        assert "attendance.clock" in data["user"]["permissions"]
+        assert data["user"]["employee_id"]
+        assert "access" in data
+        assert "wf_access" in response.cookies
+        assert Employee.objects.filter(email="new.hire@helios.example", status="active").exists()
+
+        duplicate = api_client.post(
+            url,
+            {
+                "email": "new.hire@helios.example",
+                "password": "NewHirePassword1!",
+                "first_name": "New",
+                "last_name": "Hire",
+            },
+            format="json",
+        )
+        assert duplicate.status_code == status.HTTP_400_BAD_REQUEST
 
     def test_bearer_header_authentication(self, api_client, create_user):
         create_user(email="bearer@helios.example", password="SecretPassword123!")

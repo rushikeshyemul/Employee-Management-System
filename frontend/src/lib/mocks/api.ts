@@ -44,6 +44,7 @@ import type {
   LeaveRequest,
   LeaveRequestWrite,
   LoginRequest,
+  RegisterRequest,
   NotificationPreferences,
   OrganisationSettings,
   PersonRef,
@@ -334,6 +335,46 @@ export const mockApi = {
     }
     writeSession(account.userId, Boolean(input.remember_me));
     return { user: userFrom(employee, account.role) };
+  },
+
+  register(input: RegisterRequest) {
+    const email = input.email.trim().toLowerCase();
+    if (db().accounts.some((item) => item.email.toLowerCase() === email)) {
+      throw new ApiError(400, "An account with this email already exists.", {
+        email: ["An account with this email already exists."],
+      });
+    }
+    const id = nextSequence("emp");
+    const employee: Employee = {
+      id,
+      user_id: id,
+      employee_code: `HX-${String(db().sequence).padStart(4, "0")}`,
+      first_name: input.first_name.trim(),
+      last_name: input.last_name.trim(),
+      preferred_name: input.preferred_name?.trim() || null,
+      email,
+      phone: null,
+      job_title: "Employee",
+      department_id: db().departments[0]?.id ?? "",
+      team_id: null,
+      manager_id: null,
+      location: "Headquarters",
+      employment_type: "full_time",
+      status: "active",
+      start_date: new Date().toISOString().slice(0, 10),
+      end_date: null,
+      bio: "",
+      personal_email: null,
+      emergency_contact_name: null,
+      emergency_contact_phone: null,
+      salary_band: null,
+      date_of_birth: null,
+    };
+    db().employees.push(employee);
+    db().accounts.push({ email, password: input.password, userId: id, role: "employee" });
+    saveDb();
+    writeSession(id, false);
+    return { user: userFrom(employee, "employee") };
   },
 
   logout() {

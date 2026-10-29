@@ -63,6 +63,19 @@ class TestAttendance:
         me_res2 = api_client.get("/api/v1/attendance/me/")
         assert me_res2.json()["status"] == "clocked_out"
 
+    def test_clock_in_assigns_a_department_when_the_employee_has_none(
+        self, api_client, user_with_employee
+    ):
+        expected_department_id = user_with_employee["emp"].department_id
+        user_with_employee["emp"].department = None
+        user_with_employee["emp"].save(update_fields=["department", "updated_at"])
+        api_client.force_authenticate(user=user_with_employee["user"])
+
+        response = api_client.post("/api/v1/attendance/clock-in/", format="json")
+        assert response.status_code == status.HTTP_200_OK
+        user_with_employee["emp"].refresh_from_db()
+        assert user_with_employee["emp"].department_id == expected_department_id
+
     def test_clock_out_without_clock_in(self, api_client, user_with_employee):
         api_client.force_authenticate(user=user_with_employee["user"])
         res = api_client.post("/api/v1/attendance/clock-out/", format="json")

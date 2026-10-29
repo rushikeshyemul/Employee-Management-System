@@ -20,6 +20,20 @@ from .serializers import (
 )
 
 
+def department_for_employee(employee):
+    """Attendance records require a department. Use the employee's, or the first one."""
+    if employee.department_id:
+        return employee.department
+    from apps.organisations.models import Department
+
+    department = Department.objects.order_by("name").first()
+    if department is None:
+        return None
+    employee.department = department
+    employee.save(update_fields=["department", "updated_at"])
+    return department
+
+
 def get_or_create_employee_for_user(user):
     emp = getattr(user, "employee_profile", None)
     if not emp:
@@ -119,12 +133,18 @@ class ClockInView(APIView):
     @transaction.atomic
     def post(self, request):
         emp = get_or_create_employee_for_user(request.user)
+        department = department_for_employee(emp)
+        if department is None:
+            return Response(
+                {"detail": "Clock-in needs a department. Ask an administrator to add one first."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
         today = timezone.now().date()
         record, created = AttendanceRecord.objects.get_or_create(
             employee=emp,
             date=today,
             defaults={
-                "department": emp.department,
+                "department": department,
                 "timezone": getattr(request.user, "timezone", "UTC"),
             },
         )

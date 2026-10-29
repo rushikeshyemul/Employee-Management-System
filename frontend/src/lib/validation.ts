@@ -11,6 +11,23 @@ export const loginSchema = z.object({
   remember_me: z.boolean(),
 });
 
+export const registerSchema = z
+  .object({
+    first_name: z.string().trim().min(1, "Enter your first name."),
+    last_name: z.string().trim().min(1, "Enter your last name."),
+    email: z
+      .string()
+      .trim()
+      .min(1, "Enter your work email.")
+      .email("Enter a valid work email."),
+    password: z.string().min(8, "Password must be at least 8 characters."),
+    confirm: z.string().min(1, "Confirm your password."),
+  })
+  .refine((value) => value.password === value.confirm, {
+    path: ["confirm"],
+    message: "Passwords do not match.",
+  });
+
 export const forgotPasswordSchema = z.object({
   email: z
     .string()

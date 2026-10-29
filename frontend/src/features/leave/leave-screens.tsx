@@ -105,7 +105,7 @@ function LeaveForm({ balances }: { balances: { leave_type_id: string; available_
       <h2 className="text-sm font-medium md:col-span-2">Request leave</h2>
       <div className="grid gap-1.5">
         <Label>Leave type</Label>
-        <Select value={form.watch("leave_type_id") || undefined} onValueChange={(value) => value && form.setValue("leave_type_id", value, { shouldValidate: true })}>
+        <Select value={form.watch("leave_type_id")} onValueChange={(value) => value && form.setValue("leave_type_id", value, { shouldValidate: true })}>
           <SelectTrigger className="w-full"><SelectValue placeholder="Select type" /></SelectTrigger>
           <SelectContent>{types.data?.map((type) => <SelectItem key={type.id} value={type.id}>{type.name}</SelectItem>)}</SelectContent>
         </Select>
@@ -139,19 +139,19 @@ function LeaveCalendar({ requests }: { requests: { id: string; employee: { name:
   const days = eachDayOfInterval({ start: startOfWeek(startOfMonth(month), { weekStartsOn: 1 }), end: endOfWeek(endOfMonth(month), { weekStartsOn: 1 }) });
   return (
     <section className="rounded-xl border bg-card p-4">
-      <div className="mb-3 flex items-center justify-between">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-sm font-medium">{format(month, "MMMM yyyy")}</h2>
         <div className="flex gap-2">
           <Button size="sm" variant="outline" onClick={() => setMonth((value) => addMonths(value, -1))}>Previous</Button>
           <Button size="sm" variant="outline" onClick={() => setMonth((value) => addMonths(value, 1))}>Next</Button>
         </div>
       </div>
-      <div className="grid grid-cols-7 gap-1 text-xs">
+      <div className="grid grid-cols-7 gap-0.5 text-[10px] sm:gap-1 sm:text-xs">
         {days.map((day) => {
           const key = format(day, "yyyy-MM-dd");
           const hits = requests.filter((request) => request.start_date <= key && request.end_date >= key && request.status !== "withdrawn" && request.status !== "cancelled");
           return (
-            <div key={key} className={`min-h-16 rounded-md border p-1 ${isSameMonth(day, month) ? "" : "opacity-40"}`}>
+            <div key={key} className={`min-h-12 rounded-md border p-0.5 sm:min-h-16 sm:p-1 ${isSameMonth(day, month) ? "" : "opacity-40"}`}>
               <div>{format(day, "d")}</div>
               {hits.slice(0, 2).map((hit) => <div key={hit.id} className="truncate text-[10px]">{hit.employee.name.split(" ")[0]}</div>)}
             </div>

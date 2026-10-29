@@ -72,7 +72,11 @@ export const NAV_ITEMS: NavItem[] = [
     label: "My Tasks",
     icon: "tasks",
     section: "workspace",
-    isVisible: (permissions) => hasPermission(permissions, "tasks.view_own"),
+    isVisible: (permissions) =>
+      hasPermission(permissions, "tasks.view_own") ||
+      hasPermission(permissions, "tasks.view_team") ||
+      hasPermission(permissions, "tasks.view_all") ||
+      hasPermission(permissions, "tasks.create"),
     isActive: (pathname) =>
       nested(pathname, "/tasks") &&
       !nested(pathname, "/tasks/board") &&

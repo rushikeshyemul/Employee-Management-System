@@ -91,6 +91,14 @@ export interface LoginRequest {
   remember_me?: boolean;
 }
 
+export interface RegisterRequest {
+  email: string;
+  password: string;
+  first_name: string;
+  last_name: string;
+  preferred_name?: string;
+}
+
 export interface LoginResponse {
   user: CurrentUser;
   /** Present only for the bearer strategy. Never persist this value. */

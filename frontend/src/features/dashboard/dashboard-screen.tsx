@@ -68,7 +68,7 @@ export function DashboardScreen() {
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {data.metrics.map((metric) => {
               const content = (
-                <Card className="h-full">
+                <Card className="h-full shadow-sm transition-shadow duration-200 hover:shadow-md">
                   <CardHeader>
                     <p className="text-xs text-muted-foreground">{metric.label}</p>
                     <CardTitle className="text-2xl tabular-nums">{metric.value}</CardTitle>
@@ -77,7 +77,7 @@ export function DashboardScreen() {
                 </Card>
               );
               return metric.href ? (
-                <Link key={metric.id} href={metric.href} className="rounded-xl outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                <Link key={metric.id} href={metric.href} className="rounded-xl outline-none transition-transform duration-200 hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-ring motion-reduce:transform-none">
                   {content}
                 </Link>
               ) : (

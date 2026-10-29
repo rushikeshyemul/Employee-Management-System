@@ -13,7 +13,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/features/auth/auth-provider";
 import { errorMessage } from "@/lib/api/errors";
-import { isDemoMode } from "@/lib/demo-mode";
 import { DEMO_PASSWORD } from "@/lib/mocks/seed";
 import { loginSchema } from "@/lib/validation";
 
@@ -105,11 +104,17 @@ export function LoginForm() {
       <Button type="submit" disabled={form.formState.isSubmitting}>
         {form.formState.isSubmitting ? "Signing in…" : "Sign in"}
       </Button>
-      {isDemoMode() ? (
+      <p className="text-center text-sm text-muted-foreground">
+        New here?{" "}
+        <Link href="/register" className="text-primary underline-offset-4 hover:underline">
+          Create an account
+        </Link>
+      </p>
+      {process.env.NODE_ENV !== "production" ? (
         <div className="rounded-lg border bg-muted/50 p-3">
-          <p className="text-xs font-medium">Demo accounts</p>
+          <p className="text-xs font-medium">Seeded accounts</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Password for every demo account: <span className="font-mono">{DEMO_PASSWORD}</span>. Choosing an account fills the form. It does not skip sign-in.
+            Password for every seeded account: <span className="font-mono">{DEMO_PASSWORD}</span>. Choosing an account fills the form. It does not skip sign-in.
           </p>
           <div className="mt-2 flex flex-wrap gap-1.5">
             {DEMO_ACCOUNTS.map(([label, email]) => (

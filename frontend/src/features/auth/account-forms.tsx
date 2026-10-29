@@ -8,9 +8,87 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { authService } from "@/lib/api/services";
 import { errorMessage } from "@/lib/api/errors";
-import { forgotPasswordSchema, resetPasswordSchema } from "@/lib/validation";
+import { useAuth } from "@/features/auth/auth-provider";
+import { authService } from "@/lib/api/services";
+import { forgotPasswordSchema, registerSchema, resetPasswordSchema } from "@/lib/validation";
+
+export function RegisterForm() {
+  const auth = useAuth();
+  const router = useRouter();
+  const form = useForm({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      first_name: "",
+      last_name: "",
+      email: "",
+      password: "",
+      confirm: "",
+    },
+  });
+
+  async function onSubmit(values: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    password: string;
+    confirm: string;
+  }) {
+    try {
+      await auth.register({
+        first_name: values.first_name,
+        last_name: values.last_name,
+        email: values.email,
+        password: values.password,
+      });
+      router.replace("/dashboard");
+    } catch (error) {
+      toast.error(errorMessage(error));
+    }
+  }
+
+  return (
+    <form className="grid gap-4" onSubmit={form.handleSubmit(onSubmit)} noValidate>
+      <div>
+        <h1 className="text-lg font-semibold">Create your account</h1>
+        <p className="mt-1 text-sm text-muted-foreground">
+          This creates an employee account. You can clock in, request leave, and work on tasks assigned to you. Managers create and assign tasks.
+        </p>
+      </div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-1.5">
+          <Label htmlFor="first_name">First name</Label>
+          <Input id="first_name" autoComplete="given-name" {...form.register("first_name")} />
+          {form.formState.errors.first_name ? <p className="text-xs text-destructive">{form.formState.errors.first_name.message}</p> : null}
+        </div>
+        <div className="grid gap-1.5">
+          <Label htmlFor="last_name">Last name</Label>
+          <Input id="last_name" autoComplete="family-name" {...form.register("last_name")} />
+          {form.formState.errors.last_name ? <p className="text-xs text-destructive">{form.formState.errors.last_name.message}</p> : null}
+        </div>
+      </div>
+      <div className="grid gap-1.5">
+        <Label htmlFor="email">Work email</Label>
+        <Input id="email" type="email" autoComplete="email" {...form.register("email")} />
+        {form.formState.errors.email ? <p className="text-xs text-destructive">{form.formState.errors.email.message}</p> : null}
+      </div>
+      <div className="grid gap-1.5">
+        <Label htmlFor="password">Password</Label>
+        <Input id="password" type="password" autoComplete="new-password" {...form.register("password")} />
+        {form.formState.errors.password ? <p className="text-xs text-destructive">{form.formState.errors.password.message}</p> : null}
+      </div>
+      <div className="grid gap-1.5">
+        <Label htmlFor="confirm">Confirm password</Label>
+        <Input id="confirm" type="password" autoComplete="new-password" {...form.register("confirm")} />
+        {form.formState.errors.confirm ? <p className="text-xs text-destructive">{form.formState.errors.confirm.message}</p> : null}
+      </div>
+      <Button type="submit" disabled={form.formState.isSubmitting}>
+        {form.formState.isSubmitting ? "Creating account…" : "Create account"}
+      </Button>
+      <Link href="/login" className="text-sm text-primary underline-offset-4 hover:underline">Back to sign in</Link>
+    </form>
+  );
+}
 
 export function ForgotPasswordForm() {
   const form = useForm({

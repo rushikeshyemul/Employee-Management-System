@@ -88,6 +88,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   }, [status, router]);
 
   useEffect(() => {
+    setMobileOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
     function onKey(event: KeyboardEvent) {
       if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k") {
         event.preventDefault();
@@ -111,7 +115,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-dvh overflow-hidden bg-background text-foreground">
-      <aside className={`hidden shrink-0 flex-col bg-sidebar text-sidebar-foreground lg:flex ${collapsed ? "w-[72px]" : "w-64"}`}>
+      <aside className={`hidden shrink-0 flex-col overflow-hidden bg-sidebar text-sidebar-foreground transition-[width] duration-300 ease-out motion-reduce:transition-none lg:flex ${collapsed ? "w-[72px]" : "w-64"}`}>
         <SidebarBody
           collapsed={collapsed}
           pathname={pathname}
@@ -133,12 +137,15 @@ export function AppShell({ children }: { children: ReactNode }) {
         </SheetContent>
       </Sheet>
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-card px-3 md:px-4">
+        <header className="flex h-14 shrink-0 items-center gap-2 border-b bg-card/95 px-3 backdrop-blur-sm md:px-4">
           <Button variant="ghost" size="icon" className="lg:hidden" onClick={() => setMobileOpen(true)} aria-label="Open navigation">
             <Menu />
           </Button>
           <Button variant="ghost" size="icon" className="hidden lg:inline-flex" onClick={() => setCollapsed((value) => !value)} aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
             {collapsed ? <PanelLeftOpen /> : <PanelLeftClose />}
+          </Button>
+          <Button variant="outline" size="icon" className="md:hidden" onClick={() => setCommandOpen(true)} aria-label="Search">
+            <Search />
           </Button>
           <Button variant="outline" className="hidden h-8 max-w-sm flex-1 justify-start text-muted-foreground md:inline-flex" onClick={() => setCommandOpen(true)}>
             <Search />
@@ -154,11 +161,11 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </span>
               ) : null}
             </Button>
-            <div className="hidden items-center gap-2 px-2 sm:flex">
+            <div className="hidden min-w-0 items-center gap-2 px-2 sm:flex">
               <UserAvatar name={personName(user)} size="sm" />
-              <div className="leading-tight">
-                <p className="text-sm font-medium">{personName(user)}</p>
-                <p className="text-[11px] text-muted-foreground">{titleCase(user.role)}</p>
+              <div className="hidden min-w-0 leading-tight md:block">
+                <p className="truncate text-sm font-medium">{personName(user)}</p>
+                <p className="truncate text-[11px] text-muted-foreground">{titleCase(user.role)}</p>
               </div>
             </div>
             <Button variant="ghost" size="icon" onClick={() => void logout()} aria-label="Sign out">
@@ -186,8 +193,8 @@ export function AppShell({ children }: { children: ReactNode }) {
             GET /auth/me/ did not include permissions. Navigation is using the documented defaults for {titleCase(user.role)}. The API still enforces access.
           </div>
         ) : null}
-        <main id="main" tabIndex={-1} className="flex-1 overflow-y-auto">
-          <div className="mx-auto w-full max-w-[1440px] p-4 md:p-6">
+        <main id="main" tabIndex={-1} className="flex-1 overflow-y-auto overscroll-contain">
+          <div className="mx-auto w-full max-w-[1440px] px-3 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:px-4 md:px-6 md:py-6">
             {allowed ? children : <AccessDenied />}
           </div>
         </main>
@@ -240,7 +247,7 @@ function SidebarBody({
                       aria-current={active ? "page" : undefined}
                       title={collapsed ? item.label : undefined}
                       onClick={onNavigate}
-                      className={`flex items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-sidebar-ring ${
+                      className={`flex min-h-9 items-center gap-2 rounded-md px-2 py-1.5 text-sm outline-none transition-colors duration-200 focus-visible:ring-2 focus-visible:ring-sidebar-ring ${
                         active
                           ? "bg-sidebar-accent text-sidebar-accent-foreground"
                           : "text-sidebar-foreground/80 hover:bg-sidebar-accent/70 hover:text-sidebar-accent-foreground"

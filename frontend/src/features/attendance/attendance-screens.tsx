@@ -178,13 +178,13 @@ export function MonthGrid({ month, marks }: { month: Date; marks: Record<string,
     end: endOfWeek(endOfMonth(month), { weekStartsOn: 1 }),
   });
   return (
-    <div className="grid grid-cols-7 gap-1 text-center text-xs">
+    <div className="grid grid-cols-7 gap-0.5 text-center text-[10px] sm:gap-1 sm:text-xs">
       {["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"].map((day) => <div key={day} className="py-1 text-muted-foreground">{day}</div>)}
       {days.map((day) => {
         const key = format(day, "yyyy-MM-dd");
         const mark = marks[key];
         return (
-          <div key={key} className={`min-h-12 rounded-md border p-1 ${isSameMonth(day, month) ? "bg-background" : "opacity-40"}`}>
+          <div key={key} className={`min-h-10 rounded-md border p-0.5 sm:min-h-12 sm:p-1 ${isSameMonth(day, month) ? "bg-background" : "opacity-40"}`}>
             <div>{format(day, "d")}</div>
             {mark ? <div className="truncate text-[10px] text-muted-foreground">{mark}</div> : null}
           </div>

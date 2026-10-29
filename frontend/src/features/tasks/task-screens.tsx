@@ -247,7 +247,7 @@ export function BoardScreen() {
               <p className="mb-3 text-xs text-muted-foreground">Showing the first {data.results.length} of {data.count}. Narrow the filters to see more.</p>
             ) : null}
             <DndContext sensors={sensors} collisionDetection={closestCorners} onDragEnd={onDragEnd}>
-              <div className="flex gap-3 overflow-x-auto pb-3">
+              <div className="flex snap-x snap-mandatory gap-3 overflow-x-auto overscroll-x-contain pb-3">
                 {TASK_STATUS_META.map((column) => (
                   <BoardColumn
                     key={column.id}
@@ -305,7 +305,7 @@ function BoardColumn({
 }) {
   const { setNodeRef, isOver } = useDroppable({ id: status });
   return (
-    <section ref={setNodeRef} className={`w-72 shrink-0 rounded-xl border bg-muted/40 p-2 ${isOver ? "ring-2 ring-ring" : ""}`} aria-label={statusLabel(status)}>
+    <section ref={setNodeRef} className={`w-[min(18rem,85vw)] shrink-0 snap-start rounded-xl border bg-muted/40 p-2 transition-shadow duration-200 sm:w-72 ${isOver ? "ring-2 ring-ring" : ""}`} aria-label={statusLabel(status)}>
       <header className="mb-2 flex items-center justify-between px-1">
         <h2 className="text-sm font-medium">{statusLabel(status)}</h2>
         <span className="text-xs text-muted-foreground">{tasks.length}</span>
@@ -324,7 +324,7 @@ function TaskCard({ task, onMove }: { task: Task; onMove: (task: Task, action: T
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({ id: task.id });
   const actions = user ? getTaskActions(task, user) : [];
   return (
-    <article ref={setNodeRef} className={`rounded-lg border bg-card p-3 shadow-sm ${isDragging ? "opacity-60" : ""}`}>
+    <article ref={setNodeRef} className={`rounded-lg border bg-card p-3 shadow-sm transition-shadow duration-200 hover:shadow-md ${isDragging ? "opacity-60" : ""}`}>
       <div className="flex items-center justify-between gap-2">
         <Link href={`/tasks/${task.id}`} className="font-mono text-xs text-primary hover:underline">{task.key}</Link>
         <button type="button" className="cursor-grab text-xs text-muted-foreground" aria-label={`Drag ${task.key}`} {...listeners} {...attributes}>
@@ -642,7 +642,7 @@ function SelectField({ label, value, onChange, options, error }: { label: string
   return (
     <div className="grid gap-1.5">
       <Label>{label}</Label>
-      <Select value={value || undefined} onValueChange={(next) => next && onChange(next)}>
+      <Select value={value} onValueChange={(next) => next && onChange(next)}>
         <SelectTrigger className="w-full" aria-label={label}><SelectValue placeholder={`Select ${label.toLowerCase()}`} /></SelectTrigger>
         <SelectContent>
           {options.map(([optionValue, optionLabel]) => <SelectItem key={optionValue} value={optionValue}>{optionLabel}</SelectItem>)}

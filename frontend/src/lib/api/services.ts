@@ -24,6 +24,7 @@ import type {
   LeaveType,
   LoginRequest,
   LoginResponse,
+  RegisterRequest,
   MessageResponse,
   NotificationPreferences,
   OrganisationSettings,
@@ -62,6 +63,10 @@ function live<T>(path: string, options?: Parameters<typeof apiRequest>[1]) {
 }
 
 export const authService = {
+  register(input: RegisterRequest) {
+    if (isDemoMode()) return fromDemo<LoginResponse>(mockApi.register(input));
+    return live<LoginResponse>(endpoints.register, { method: "POST", body: input, skipRefresh: true });
+  },
   login(input: LoginRequest) {
     if (isDemoMode()) return fromDemo<LoginResponse>(mockApi.login(input));
     return live<LoginResponse>(endpoints.login, { method: "POST", body: input, skipRefresh: true });
