@@ -55,6 +55,7 @@ class TestReports:
         assert "leave_balances" in data
         assert "organisation" in data
         assert data["scope"] == "organisation"
+        assert data["attendance_today"]["status"] == "not_started"
 
     def test_global_search(self, api_client, report_setup):
         api_client.force_authenticate(user=report_setup["user"])

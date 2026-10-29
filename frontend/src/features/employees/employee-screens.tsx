@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import { EmploymentBadge, RequestStatusBadge, StatusBadge } from "@/components/shared/badges";
 import { PageHeader, QueryBoundary } from "@/components/shared/states";
 import { UserAvatar } from "@/components/shared/user-avatar";
+import { ThemePicker } from "@/components/theme/theme-picker";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -161,7 +162,9 @@ export function EmployeeProfileScreen({ self = false }: { self?: boolean }) {
   });
 
   return (
-    <QueryBoundary isPending={employee.isPending} isError={employee.isError} error={employee.error} data={employee.data} onRetry={() => void employee.refetch()}>
+    <div className="space-y-4">
+      {self ? <AppearancePanel /> : null}
+      <QueryBoundary isPending={employee.isPending} isError={employee.isError} error={employee.error} data={employee.data} onRetry={() => void employee.refetch()}>
       {(person) => (
         <div className="space-y-4">
           <PageHeader
@@ -240,6 +243,19 @@ export function EmployeeProfileScreen({ self = false }: { self?: boolean }) {
         </div>
       )}
     </QueryBoundary>
+    </div>
+  );
+}
+
+function AppearancePanel() {
+  return (
+    <section className="rounded-xl border bg-card p-4">
+      <h2 className="text-sm font-medium">Appearance</h2>
+      <p className="mt-1 text-sm text-muted-foreground">Choose a theme for this browser. It stays on this device.</p>
+      <div className="mt-3">
+        <ThemePicker variant="panel" />
+      </div>
+    </section>
   );
 }
 

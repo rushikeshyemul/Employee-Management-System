@@ -86,7 +86,7 @@ export function DashboardScreen() {
             })}
           </div>
           <div className="grid gap-4 xl:grid-cols-[320px_1fr]">
-            {data.attendance_today && user ? <ClockPanel today={data.attendance_today} /> : <div />}
+            {user ? <ClockPanel today={data.attendance_today ?? undefined} /> : null}
             <Card>
               <CardHeader>
                 <CardTitle>Tasks by status</CardTitle>

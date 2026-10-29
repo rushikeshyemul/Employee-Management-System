@@ -106,7 +106,7 @@ const ROUTE_GUARDS: { prefix: string; anyOf: readonly Permission[] }[] = [
       "attendance.view_team",
     ],
   },
-  { prefix: "/attendance", anyOf: ["attendance.view_own"] },
+  { prefix: "/attendance", anyOf: ["attendance.view_own", "attendance.clock", "dashboard.view"] },
   { prefix: "/leave/manage", anyOf: ["leave.manage"] },
   { prefix: "/leave/team", anyOf: ["leave.view_team", "leave.manage"] },
   { prefix: "/leave", anyOf: ["leave.view_own"] },

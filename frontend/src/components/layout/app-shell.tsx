@@ -40,6 +40,7 @@ import { titleCase } from "@/lib/format";
 import { resetDb } from "@/lib/mocks/store";
 import { useQueryClient } from "@tanstack/react-query";
 import { CommandMenu } from "@/components/layout/command-menu";
+import { ThemePicker } from "@/components/theme/theme-picker";
 
 const ICONS: Record<NavIconName, React.ComponentType<{ className?: string }>> = {
   overview: LayoutDashboard,
@@ -69,7 +70,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [menuPath, setMenuPath] = useState<string | null>(null);
+  const mobileOpen = menuPath === pathname;
   const [commandOpen, setCommandOpen] = useState(false);
   const queryClient = useQueryClient();
   const navigation = useMemo(() => visibleNavigation(permissions), [permissions]);
@@ -87,9 +89,9 @@ export function AppShell({ children }: { children: ReactNode }) {
     }
   }, [status, router]);
 
-  useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
+  function setMobileOpen(open: boolean) {
+    setMenuPath(open ? pathname : null);
+  }
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -123,7 +125,7 @@ export function AppShell({ children }: { children: ReactNode }) {
           onNavigate={() => undefined}
         />
       </aside>
-      <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
+      <Sheet open={mobileOpen} onOpenChange={(open) => setMobileOpen(open)}>
         <SheetContent side="left" className="w-72 bg-sidebar p-0 text-sidebar-foreground">
           <SheetHeader className="sr-only">
             <SheetTitle>Navigation</SheetTitle>
@@ -153,6 +155,7 @@ export function AppShell({ children }: { children: ReactNode }) {
             <kbd className="ml-auto rounded border bg-muted px-1.5 py-0.5 text-[10px]">Ctrl K</kbd>
           </Button>
           <div className="ml-auto flex items-center gap-1">
+            <ThemePicker />
             <Button variant="ghost" size="icon" className="relative" nativeButton={false} render={<Link href="/notifications" />} aria-label={`Notifications${unread.data ? `, ${unread.data} unread` : ""}`}>
               <Bell />
               {unread.data ? (

@@ -95,7 +95,10 @@ export const NAV_ITEMS: NavItem[] = [
     label: "Attendance",
     icon: "attendance",
     section: "workspace",
-    isVisible: (permissions) => hasPermission(permissions, "attendance.view_own"),
+    isVisible: (permissions) =>
+      hasPermission(permissions, "attendance.view_own") ||
+      hasPermission(permissions, "attendance.clock") ||
+      hasPermission(permissions, "dashboard.view"),
     isActive: (pathname) =>
       nested(pathname, "/attendance") &&
       !nested(pathname, "/attendance/manage") &&

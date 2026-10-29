@@ -55,6 +55,7 @@
 }
 
 :root {
+  color-scheme: light;
   --background: #f4f6f8;
   --foreground: #122033;
   --card: #ffffff;
@@ -127,6 +128,209 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* Navy is the default in :root. The other palettes override the same shadcn variables. */
+[data-theme="ocean"] {
+  --background: #f3f7fb;
+  --foreground: #0f2744;
+  --card: #ffffff;
+  --card-foreground: #0f2744;
+  --popover: #ffffff;
+  --popover-foreground: #0f2744;
+  --primary: #0c6e8a;
+  --primary-foreground: #f4fbfd;
+  --secondary: #e3f1f6;
+  --secondary-foreground: #0c4a5e;
+  --muted: #e8f0f5;
+  --muted-foreground: #4d6578;
+  --accent: #d7eef4;
+  --accent-foreground: #0c4a5e;
+  --destructive: #b42318;
+  --border: #d5e3ee;
+  --input: #c5d7e6;
+  --ring: #0c6e8a;
+  --chart-1: #0c6e8a;
+  --chart-2: #1f7a4d;
+  --chart-3: #b45309;
+  --chart-4: #155e75;
+  --chart-5: #5c7c90;
+  --sidebar: #083044;
+  --sidebar-foreground: #e6f4f8;
+  --sidebar-primary: #7ee0d6;
+  --sidebar-primary-foreground: #083044;
+  --sidebar-accent: #0e4a66;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: #7ee0d6;
+  --success: #1f7a4d;
+  --success-foreground: #f3fbf6;
+  --warning: #b45309;
+  --warning-foreground: #fffbeb;
+  --info: #0c6e8a;
+  --info-foreground: #f4fbfd;
+}
+
+[data-theme="forest"] {
+  --background: #f4f7f4;
+  --foreground: #14241a;
+  --card: #ffffff;
+  --card-foreground: #14241a;
+  --popover: #ffffff;
+  --popover-foreground: #14241a;
+  --primary: #1f6b45;
+  --primary-foreground: #f4fbf7;
+  --secondary: #e5f2ea;
+  --secondary-foreground: #145032;
+  --muted: #eaf2ec;
+  --muted-foreground: #4f6658;
+  --accent: #dceee3;
+  --accent-foreground: #145032;
+  --destructive: #b42318;
+  --border: #d5e4da;
+  --input: #c5d8cc;
+  --ring: #1f6b45;
+  --chart-1: #1f6b45;
+  --chart-2: #12315a;
+  --chart-3: #b45309;
+  --chart-4: #3f7d5a;
+  --chart-5: #5c7364;
+  --sidebar: #10281c;
+  --sidebar-foreground: #e7f6ee;
+  --sidebar-primary: #8ee0b0;
+  --sidebar-primary-foreground: #10281c;
+  --sidebar-accent: #1c4330;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: #8ee0b0;
+  --success: #1f7a4d;
+  --success-foreground: #f3fbf6;
+  --warning: #b45309;
+  --warning-foreground: #fffbeb;
+  --info: #1d4e89;
+  --info-foreground: #f5f8fc;
+}
+
+[data-theme="copper"] {
+  --background: #f8f5f1;
+  --foreground: #2a1c12;
+  --card: #ffffff;
+  --card-foreground: #2a1c12;
+  --popover: #ffffff;
+  --popover-foreground: #2a1c12;
+  --primary: #9a4d1c;
+  --primary-foreground: #fff8f3;
+  --secondary: #f3e6da;
+  --secondary-foreground: #6b3414;
+  --muted: #f3eee8;
+  --muted-foreground: #6f5b4c;
+  --accent: #f6e4d4;
+  --accent-foreground: #6b3414;
+  --destructive: #b42318;
+  --border: #eadfd4;
+  --input: #ddcfc0;
+  --ring: #9a4d1c;
+  --chart-1: #9a4d1c;
+  --chart-2: #1f7a4d;
+  --chart-3: #12315a;
+  --chart-4: #b45309;
+  --chart-5: #7a6556;
+  --sidebar: #2c1a12;
+  --sidebar-foreground: #f8eee6;
+  --sidebar-primary: #f0b27a;
+  --sidebar-primary-foreground: #2c1a12;
+  --sidebar-accent: #4a2c1c;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: #f0b27a;
+  --success: #1f7a4d;
+  --success-foreground: #f3fbf6;
+  --warning: #9a4d1c;
+  --warning-foreground: #fff8f3;
+  --info: #1d4e89;
+  --info-foreground: #f5f8fc;
+}
+
+[data-theme="violet"] {
+  --background: #f6f5f9;
+  --foreground: #1c1630;
+  --card: #ffffff;
+  --card-foreground: #1c1630;
+  --popover: #ffffff;
+  --popover-foreground: #1c1630;
+  --primary: #5b3cc4;
+  --primary-foreground: #f7f5ff;
+  --secondary: #ece7f8;
+  --secondary-foreground: #3d2a86;
+  --muted: #efedf4;
+  --muted-foreground: #5e5674;
+  --accent: #e6e0f7;
+  --accent-foreground: #3d2a86;
+  --destructive: #b42318;
+  --border: #e0dbea;
+  --input: #d0c8e0;
+  --ring: #5b3cc4;
+  --chart-1: #5b3cc4;
+  --chart-2: #1f7a4d;
+  --chart-3: #b45309;
+  --chart-4: #7c5cdb;
+  --chart-5: #6b6284;
+  --sidebar: #1c1533;
+  --sidebar-foreground: #efeafc;
+  --sidebar-primary: #c4b5fd;
+  --sidebar-primary-foreground: #1c1533;
+  --sidebar-accent: #32265a;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: #c4b5fd;
+  --success: #1f7a4d;
+  --success-foreground: #f3fbf6;
+  --warning: #b45309;
+  --warning-foreground: #fffbeb;
+  --info: #5b3cc4;
+  --info-foreground: #f7f5ff;
+}
+
+/* Dark navy with teal, blue, and violet accents. The id is ink so it does not collide with Tailwind's black color. */
+html[data-theme="ink"] {
+  color-scheme: dark;
+  --background: #0c1424;
+  --foreground: #e7eef8;
+  --card: #152036;
+  --card-foreground: #e7eef8;
+  --popover: #152036;
+  --popover-foreground: #e7eef8;
+  --primary: #5eead4;
+  --primary-foreground: #042f2e;
+  --secondary: #1c3050;
+  --secondary-foreground: #dbeafe;
+  --muted: #18283f;
+  --muted-foreground: #93a8c4;
+  --accent: #243656;
+  --accent-foreground: #dbeafe;
+  --destructive: #f07178;
+  --border: rgb(125 176 230 / 18%);
+  --input: rgb(125 176 230 / 28%);
+  --ring: #5eead4;
+  --chart-1: #5eead4;
+  --chart-2: #60a5fa;
+  --chart-3: #f0a04b;
+  --chart-4: #c4b5fd;
+  --chart-5: #86efac;
+  --sidebar: #08111f;
+  --sidebar-foreground: #e7eef8;
+  --sidebar-primary: #5eead4;
+  --sidebar-primary-foreground: #042f2e;
+  --sidebar-accent: #163154;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: rgb(125 176 230 / 16%);
+  --sidebar-ring: #5eead4;
+  --success: #34d399;
+  --success-foreground: #022c22;
+  --warning: #fbbf24;
+  --warning-foreground: #1c1404;
+  --info: #60a5fa;
+  --info-foreground: #082f49;
 }
 
 @layer base {

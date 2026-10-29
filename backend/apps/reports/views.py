@@ -17,7 +17,7 @@ from apps.leave_management.serializers import LeaveBalanceSerializer, LeaveReque
 from apps.leave_management.views import ensure_default_leave_balances
 from apps.notifications.models import Notification
 from apps.notifications.serializers import NotificationSerializer
-from apps.organisations.models import Project
+from apps.organisations.models import OrganisationSettings, Project
 from apps.organisations.serializers import ProjectSerializer
 from apps.tasks.models import Task, TaskEvent
 from apps.tasks.serializers import TaskSerializer
@@ -93,27 +93,54 @@ class DashboardReportView(APIView):
                 }
             )
 
-        # Attendance today
+        # Attendance today is always returned so the clock-in control is visible
+        # before the first punch of the day.
+        org = OrganisationSettings.objects.first()
+        breaks_enabled = org.breaks_enabled if org else True
+        standard_start = org.standard_start if org else "09:00"
         att_rec = AttendanceRecord.objects.filter(employee=emp, date=today).first()
-        attendance_today = None
-        if att_rec:
+        if not att_rec or not att_rec.clock_in_at:
+            attendance_today = {
+                "date": today.isoformat(),
+                "status": "not_started",
+                "clock_in_at": None,
+                "clock_out_at": None,
+                "break_started_at": None,
+                "break_minutes": 0,
+                "worked_minutes": 0,
+                "timezone": getattr(user, "timezone", "UTC"),
+                "is_late": False,
+                "missing_clock_out": False,
+                "breaks_enabled": breaks_enabled,
+                "standard_start": standard_start,
+            }
+        else:
+            if att_rec.clock_out_at:
+                day_status = "clocked_out"
+                worked = att_rec.worked_minutes
+            elif att_rec.break_started_at:
+                day_status = "on_break"
+                elapsed = int((timezone.now() - att_rec.clock_in_at).total_seconds() / 60)
+                worked = max(0, elapsed - att_rec.break_minutes)
+            else:
+                day_status = "clocked_in"
+                elapsed = int((timezone.now() - att_rec.clock_in_at).total_seconds() / 60)
+                worked = max(0, elapsed - att_rec.break_minutes)
             attendance_today = {
                 "date": att_rec.date.isoformat(),
-                "status": "clocked_out"
-                if att_rec.clock_out_at
-                else ("on_break" if att_rec.break_started_at else "clocked_in"),
-                "clock_in_at": att_rec.clock_in_at.isoformat() if att_rec.clock_in_at else None,
+                "status": day_status,
+                "clock_in_at": att_rec.clock_in_at.isoformat(),
                 "clock_out_at": att_rec.clock_out_at.isoformat() if att_rec.clock_out_at else None,
                 "break_started_at": att_rec.break_started_at.isoformat()
                 if att_rec.break_started_at
                 else None,
                 "break_minutes": att_rec.break_minutes,
-                "worked_minutes": att_rec.worked_minutes,
+                "worked_minutes": worked,
                 "timezone": att_rec.timezone,
                 "is_late": "late" in att_rec.exceptions,
                 "missing_clock_out": False,
-                "breaks_enabled": True,
-                "standard_start": "09:00",
+                "breaks_enabled": breaks_enabled,
+                "standard_start": standard_start,
             }
 
         # Tasks breakdown

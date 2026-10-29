@@ -1,11 +1,13 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useState, type ReactNode } from "react";
+import { ThemeProvider, useTheme } from "next-themes";
+import { useEffect, useState, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ApiError } from "@/lib/api/errors";
 import { AuthProvider } from "@/features/auth/auth-provider";
+import { DEFAULT_THEME, THEME_IDS } from "@/lib/themes";
 
 function makeQueryClient() {
   return new QueryClient({
@@ -24,16 +26,39 @@ function makeQueryClient() {
   });
 }
 
+function ThemeClassSync() {
+  const { theme, setTheme } = useTheme();
+  useEffect(() => {
+    if (theme === "black") {
+      setTheme("ink");
+      return;
+    }
+    if (!theme) return;
+    document.documentElement.classList.toggle("dark", theme === "ink");
+  }, [theme, setTheme]);
+  return null;
+}
+
 export function Providers({ children }: { children: ReactNode }) {
   const [client] = useState(makeQueryClient);
   return (
-    <QueryClientProvider client={client}>
-      <AuthProvider>
-        <TooltipProvider delay={300}>
-          {children}
-          <Toaster position="top-right" closeButton />
-        </TooltipProvider>
-      </AuthProvider>
-    </QueryClientProvider>
+    <ThemeProvider
+      attribute="data-theme"
+      defaultTheme={DEFAULT_THEME}
+      themes={THEME_IDS}
+      enableSystem={false}
+      disableTransitionOnChange
+      storageKey="wh-theme"
+    >
+      <ThemeClassSync />
+      <QueryClientProvider client={client}>
+        <AuthProvider>
+          <TooltipProvider delay={300}>
+            {children}
+            <Toaster position="top-right" closeButton />
+          </TooltipProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ThemeProvider>
   );
 }
